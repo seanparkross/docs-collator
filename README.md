@@ -1,6 +1,6 @@
 # Docs Collator
 
-A Deno application that combines MDX documentation files into a single text file, respecting the Docusaurus ordering system. This tool processes documentation content while maintaining the same order as it appears in your Docusaurus site.
+A Deno application that combines Docusaurus MDX documentation files into a single text file, respecting the Docusaurus ordering system. This tool processes documentation content while maintaining the same order as it appears in your Docusaurus site.
 
 ## Features
 

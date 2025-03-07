@@ -54,6 +54,7 @@ interface FileEntry {
   content: string;
   frontmatter: MDXFrontmatter;
   categoryConfig: CategoryConfig | null;
+  parentDirs: string[];
 }
 
 async function combineMarkdownFiles(directory: string, outputFile: string) {
@@ -65,39 +66,79 @@ async function combineMarkdownFiles(directory: string, outputFile: string) {
     exts: [".mdx"],
     includeDirs: false,
   })) {
+    // Skip files that begin with an underscore (partials)
+    if (entry.name.startsWith("_")) {
+      continue;
+    }
+
     try {
       const content = await Deno.readTextFile(entry.path);
       const frontmatter = await parseMDXFrontmatter(content);
       const dirPath = dirname(entry.path);
 
-      // Get or cache category config for this directory
-      let categoryConfig = categoryConfigs.get(dirPath);
-      if (categoryConfig === undefined) {
-        categoryConfig = await readCategoryConfig(dirPath);
-        categoryConfigs.set(dirPath, categoryConfig);
+      // Get all parent directories
+      const parentDirs: string[] = [];
+      let currentDir = dirPath;
+      while (currentDir !== directory) {
+        parentDirs.push(currentDir);
+        currentDir = dirname(currentDir);
+      }
+      parentDirs.reverse(); // Order from root to leaf
+
+      // Get or cache category config for this directory and all parent directories
+      const dirConfigs = new Map<string, CategoryConfig | null>();
+      for (const dir of [dirPath, ...parentDirs]) {
+        let config: CategoryConfig | null;
+        if (!categoryConfigs.has(dir)) {
+          config = await readCategoryConfig(dir);
+          categoryConfigs.set(dir, config);
+        } else {
+          const existingConfig = categoryConfigs.get(dir);
+          if (existingConfig === undefined) {
+            throw new Error(`Category config not found for directory ${dir}`);
+          }
+          config = existingConfig;
+        }
+        dirConfigs.set(dir, config);
       }
 
       allContent.push({
         path: entry.path,
         content,
         frontmatter,
-        categoryConfig,
+        categoryConfig: dirConfigs.get(dirPath)!,
+        parentDirs,
       });
     } catch (error) {
       console.error(`Error reading file ${entry.path}:`, error);
     }
   }
 
-  // Sort content based on category position and sidebar position
+  // Sort content based on hierarchical category positions and sidebar position
   allContent.sort((a, b) => {
-    // First compare directory positions from _category_.json
-    const aDirPos = a.categoryConfig?.position ?? 0;
-    const bDirPos = b.categoryConfig?.position ?? 0;
-    if (aDirPos !== bDirPos) {
-      return aDirPos - bDirPos;
+    // Compare each level of the directory hierarchy
+    const maxDepth = Math.max(a.parentDirs.length, b.parentDirs.length);
+    for (let i = 0; i < maxDepth; i++) {
+      const aDir = a.parentDirs[i];
+      const bDir = b.parentDirs[i];
+
+      // If one path is shorter, it should come first
+      if (!aDir && !bDir) break;
+      if (!aDir) return -1;
+      if (!bDir) return 1;
+
+      // Compare category positions at this level
+      const aConfig = categoryConfigs.get(aDir);
+      const bConfig = categoryConfigs.get(bDir);
+      const aPos = aConfig?.position ?? 0;
+      const bPos = bConfig?.position ?? 0;
+
+      if (aPos !== bPos) {
+        return aPos - bPos;
+      }
     }
 
-    // If in same directory, compare sidebar positions
+    // If we're in the same directory, compare sidebar positions
     const aPos = a.frontmatter.sidebar_position ?? 0;
     const bPos = b.frontmatter.sidebar_position ?? 0;
     if (aPos !== bPos) {
