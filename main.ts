@@ -1,28 +1,126 @@
 import { walk } from "https://deno.land/std/fs/mod.ts";
-import { join, normalize } from "https://deno.land/std/path/mod.ts";
+import { join, normalize, dirname } from "https://deno.land/std/path/mod.ts";
+
+interface CategoryConfig {
+  position?: number;
+  label?: string;
+}
+
+interface MDXFrontmatter {
+  sidebar_position?: number;
+  sidebar_label?: string;
+  title?: string;
+  [key: string]: string | number | undefined;
+}
+
+async function readCategoryConfig(
+  dirPath: string
+): Promise<CategoryConfig | null> {
+  try {
+    const categoryPath = join(dirPath, "_category_.json");
+    const content = await Deno.readTextFile(categoryPath);
+    return JSON.parse(content);
+  } catch {
+    return null;
+  }
+}
+
+async function parseMDXFrontmatter(content: string): Promise<MDXFrontmatter> {
+  const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+  if (!frontmatterMatch) return {};
+
+  const frontmatter = frontmatterMatch[1];
+  const lines = frontmatter.split("\n");
+  const result: MDXFrontmatter = {};
+
+  for (const line of lines) {
+    const [key, value] = line.split(":").map((s) => s.trim());
+    if (key && value) {
+      // Remove quotes if present
+      const cleanValue = value.replace(/^["']|["']$/g, "");
+      if (key === "sidebar_position") {
+        result.sidebar_position = parseInt(cleanValue, 10);
+      } else {
+        result[key] = cleanValue;
+      }
+    }
+  }
+
+  return result;
+}
+
+interface FileEntry {
+  path: string;
+  content: string;
+  frontmatter: MDXFrontmatter;
+  categoryConfig: CategoryConfig | null;
+}
 
 async function combineMarkdownFiles(directory: string, outputFile: string) {
-  const allContent: string[] = [];
+  const allContent: FileEntry[] = [];
+  const categoryConfigs = new Map<string, CategoryConfig | null>();
 
-  // Walk through all files recursively
+  // First pass: collect all files and their metadata
   for await (const entry of walk(directory, {
-    exts: [".mdx"], // Only process .mdx files
+    exts: [".mdx"],
     includeDirs: false,
   })) {
     try {
-      // Read the content of each file
       const content = await Deno.readTextFile(entry.path);
-      // Add file path as a header before its content
-      allContent.push(`\n\n--- File: ${entry.path} ---\n`);
-      allContent.push(content);
+      const frontmatter = await parseMDXFrontmatter(content);
+      const dirPath = dirname(entry.path);
+
+      // Get or cache category config for this directory
+      let categoryConfig = categoryConfigs.get(dirPath);
+      if (categoryConfig === undefined) {
+        categoryConfig = await readCategoryConfig(dirPath);
+        categoryConfigs.set(dirPath, categoryConfig);
+      }
+
+      allContent.push({
+        path: entry.path,
+        content,
+        frontmatter,
+        categoryConfig,
+      });
     } catch (error) {
       console.error(`Error reading file ${entry.path}:`, error);
     }
   }
 
+  // Sort content based on category position and sidebar position
+  allContent.sort((a, b) => {
+    // First compare directory positions from _category_.json
+    const aDirPos = a.categoryConfig?.position ?? 0;
+    const bDirPos = b.categoryConfig?.position ?? 0;
+    if (aDirPos !== bDirPos) {
+      return aDirPos - bDirPos;
+    }
+
+    // If in same directory, compare sidebar positions
+    const aPos = a.frontmatter.sidebar_position ?? 0;
+    const bPos = b.frontmatter.sidebar_position ?? 0;
+    if (aPos !== bPos) {
+      return aPos - bPos;
+    }
+
+    // If positions are equal, sort alphabetically by path
+    return a.path.localeCompare(b.path);
+  });
+
+  // Generate the output content
+  const outputContent = allContent
+    .map((entry) => {
+      const title =
+        entry.frontmatter.title ||
+        entry.frontmatter.sidebar_label ||
+        entry.path;
+      return `\n\n--- File: ${entry.path} ---\n# ${title}\n\n${entry.content}`;
+    })
+    .join("\n");
+
   try {
-    // Write all content to the output file
-    await Deno.writeTextFile(outputFile, allContent.join("\n"));
+    await Deno.writeTextFile(outputFile, outputContent);
     console.log(`Successfully combined all MDX files into ${outputFile}`);
   } catch (error) {
     console.error("Error writing to output file:", error);
