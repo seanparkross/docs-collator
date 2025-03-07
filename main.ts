@@ -1,5 +1,6 @@
 import { walk } from "https://deno.land/std/fs/mod.ts";
 import { join, normalize, dirname } from "https://deno.land/std/path/mod.ts";
+import { processPartials } from "./partials.ts";
 
 interface CategoryConfig {
   position?: number;
@@ -76,6 +77,9 @@ async function combineMarkdownFiles(directory: string, outputFile: string) {
       const frontmatter = await parseMDXFrontmatter(content);
       const dirPath = dirname(entry.path);
 
+      // Process partials in the content
+      const processedContent = await processPartials(content, directory);
+
       // Get all parent directories
       const parentDirs: string[] = [];
       let currentDir = dirPath;
@@ -104,7 +108,7 @@ async function combineMarkdownFiles(directory: string, outputFile: string) {
 
       allContent.push({
         path: entry.path,
-        content,
+        content: processedContent,
         frontmatter,
         categoryConfig: dirConfigs.get(dirPath)!,
         parentDirs,

@@ -101,7 +101,33 @@ running locally and deployed on Hasura DDN. Check out the video [here](https://w
 
 1. **Install the DDN CLI**
 
-   <InstallTheCli />
+   import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import CodeBlock from "@theme/CodeBlock";
+import Version from "@site/src/components/CliVersion";
+import Admonition from "@theme/Admonition";
+
+<Tabs groupId="os-preference" className="api-tabs">
+
+<TabItem value="macOS-or-linux" label="macOS and Linux">
+
+Simply run the installer script in your terminal:
+
+<CodeBlock language="bash">
+  {`curl -L https://graphql-engine-cdn.hasura.io/ddn/cli/${props.revision || "v4"}/get.sh | bash`}
+</CodeBlock>
+
+</TabItem>
+
+<TabItem value="windows" label="Windows">
+- Download the latest <a href={`https://graphql-engine-cdn.hasura.io/ddn/cli/${props.revision || "v4"}/latest/DDN_CLI_Setup.exe`}>DDN CLI installer for Windows.</a> 
+- Run the `DDN_CLI_Setup.exe` installer file and follow the instructions. This will only take a minute.
+- By default, the DDN CLI is installed under `C:\Users\{Username}\AppData\Local\Programs\DDN_CLI`
+- The DDN CLI is added to your `%PATH%` environment variable so that you can use the `ddn` command from your terminal.
+<br />
+
+</TabItem>
+</Tabs>
 
 2. **Install [Docker](https://docs.docker.com/engine/install/)** (needed for local development)
 
@@ -367,7 +393,31 @@ This tutorial assumes you're starting from scratch; a PostgreSQL docker image sh
 in just a bit to connect a locally-running database to Hasura, but you can easily follow the steps if you already have
 data seeded; Hasura will never modify your source schema.
 
-<Prereqs />
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import CodeBlock from "@theme/CodeBlock";
+import Version from "@site/src/components/CliVersion";
+import Admonition from "@theme/Admonition";
+import InstallTheCli from "@site/docs/_install-the-cli.mdx";
+
+## Prerequisites
+
+**Install the DDN CLI**
+
+<InstallTheCli />
+
+**Install [Docker](https://docs.docker.com/engine/install/)**
+
+The Docker based workflow helps you iterate and develop locally without deploying any changes to Hasura DDN, making the
+development experience faster and your feedback loops shorter. **You'll need Docker Compose `v2.20` or later.**
+
+**Validate the installation**
+
+You can verify that the DDN CLI is installed correctly by running:
+
+```sh
+ddn doctor
+```
 
 ## Tutorial
 
@@ -819,7 +869,31 @@ This tutorial assumes you're starting from scratch. We'll use a locally running 
 it to Hasura, but you can easily follow the steps if you already have data seeded; Hasura will never modify your source
 schema.
 
-<Prereqs />
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import CodeBlock from "@theme/CodeBlock";
+import Version from "@site/src/components/CliVersion";
+import Admonition from "@theme/Admonition";
+import InstallTheCli from "@site/docs/_install-the-cli.mdx";
+
+## Prerequisites
+
+**Install the DDN CLI**
+
+<InstallTheCli />
+
+**Install [Docker](https://docs.docker.com/engine/install/)**
+
+The Docker based workflow helps you iterate and develop locally without deploying any changes to Hasura DDN, making the
+development experience faster and your feedback loops shorter. **You'll need Docker Compose `v2.20` or later.**
+
+**Validate the installation**
+
+You can verify that the DDN CLI is installed correctly by running:
+
+```sh
+ddn doctor
+```
 
 ## Tutorial
 
@@ -1232,7 +1306,31 @@ This tutorial assumes you're starting from scratch. We'll use a locally running 
 connect it to Hasura, but you can easily follow the steps if you already have data seeded or are using ClickHouse's
 hosted service; Hasura will never modify your source schema.
 
-<Prereqs />
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import CodeBlock from "@theme/CodeBlock";
+import Version from "@site/src/components/CliVersion";
+import Admonition from "@theme/Admonition";
+import InstallTheCli from "@site/docs/_install-the-cli.mdx";
+
+## Prerequisites
+
+**Install the DDN CLI**
+
+<InstallTheCli />
+
+**Install [Docker](https://docs.docker.com/engine/install/)**
+
+The Docker based workflow helps you iterate and develop locally without deploying any changes to Hasura DDN, making the
+development experience faster and your feedback loops shorter. **You'll need Docker Compose `v2.20` or later.**
+
+**Validate the installation**
+
+You can verify that the DDN CLI is installed correctly by running:
+
+```sh
+ddn doctor
+```
 
 ## Tutorial
 
@@ -1683,7 +1781,31 @@ This tutorial assumes you're starting from scratch. We'll use a locally running 
 connect it to Hasura, but you can easily follow the steps if you already have data seeded or are using Elasticsearch's
 hosted service; Hasura will never modify your source schema.
 
-<Prereqs />
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import CodeBlock from "@theme/CodeBlock";
+import Version from "@site/src/components/CliVersion";
+import Admonition from "@theme/Admonition";
+import InstallTheCli from "@site/docs/_install-the-cli.mdx";
+
+## Prerequisites
+
+**Install the DDN CLI**
+
+<InstallTheCli />
+
+**Install [Docker](https://docs.docker.com/engine/install/)**
+
+The Docker based workflow helps you iterate and develop locally without deploying any changes to Hasura DDN, making the
+development experience faster and your feedback loops shorter. **You'll need Docker Compose `v2.20` or later.**
+
+**Validate the installation**
+
+You can verify that the DDN CLI is installed correctly by running:
+
+```sh
+ddn doctor
+```
 
 ## Tutorial
 
@@ -3034,17 +3156,133 @@ its own syntax.
 <Tabs groupId="source-preference" className="api-tabs">
   <TabItem value="PostgreSQL" label="PostgreSQL">
 
-    <ModelCreateNativeQueryHowToPostgreSQL />
+    The process for adding a native query for PostgreSQL is:
+
+- Create a new SQL file in your connector directory.
+- Name the file with how you want to reference it in your supergraph API.
+- Add the SQL for your native query to the file.
+- Use the DDN CLI plugin for the PostgreSQL connector to add the native query to the connector's configuration eg:
+
+```bash title="Add the native query to the connector's configuration:"
+ddn connector plugin \
+  --connector subgraph_name/connector/connector_name/connector.yaml \
+  -- native-operation create \
+  --operation-path path/to/sql_file_name.sql \
+  --kind query
+```
+
+- Introspect your PostgreSQL data connector to fetch the latest resources.
+
+```bash
+ddn connector introspect <connector_name>
+```
+
+- Show the found resources to see the new native query.
+
+```bash
+ddn connector show-resources <connector_name>
+```
+
+- Add the model for the native query.
+
+```bash
+ddn model add <connector_link_name> <model_name>
+```
+
+- Rebuild and serve your supergraph API.
+
+Find out more about
+[native queries for PostgreSQL here](/reference/connectors/postgresql/native-operations/native-queries.mdx).
 
   </TabItem>
   <TabItem value="MongoDB" label="MongoDB">
 
-    <ModelCreateNativeQueryHowToMongoDB />
+    The process for adding a native query for MongoDB is:
+
+- Create a new MongoDB [aggregation pipeline](/reference/connectors/mongodb/native-operations/native-queries.mdx) which
+  defines the native query in your connector's directory.
+- Name the file with how you want to reference it in your supergraph API.
+- Use the DDN CLI plugin for the MongoDB connector to add the aggregation pipeline to the connector's configuration eg:
+
+```bash
+ddn connector plugin \
+  --connector subgraph_name/connector/connector_name/connector.yaml \
+  -- native-query create path/to/aggregation_pipeline_filename.json \
+  --collection collection_name
+```
+
+- Introspect your MongoDB data connector to fetch the latest resources.
+
+```bash
+ddn connector introspect <connector_name>
+```
+
+- Show the found resources to see the new native query.
+
+```bash
+ddn connector show-resources <connector_name>
+```
+
+- Add the model for the native query.
+
+```bash
+ddn model add <connector_link_name> <model_name>
+```
+
+- Rebuild and serve your supergraph API.
+
+Find out more about
+[native queries for MongoDB here](/reference/connectors/mongodb/native-operations/native-queries.mdx).
 
   </TabItem>
   <TabItem value="ClickHouse" label="ClickHouse">
 
-    <ModelCreateNativeQueryHowToClickHouse />
+    The process for adding a native query for ClickHouse is:
+
+- Create a new SQL file in your connector directory.
+- Use ClickHouse parameter syntax in the SQL file to define arguments.
+- Create a JSON configuration file in your connector directory specifying the SQL file path and the return type.
+
+```json
+{
+  "tables": {},
+  "queries": {
+    "Name": {
+      "exposed_as": "collection",
+      "file": "path/to/sql_file_name.sql",
+      "return_type": {
+        "kind": "definition",
+        "columns": {
+          "column_name": "column_type"
+        }
+      }
+    }
+  }
+}
+```
+
+- Introspect your ClickHouse data connector to fetch the latest resources.
+
+```bash
+ddn connector introspect <connector_name>
+```
+
+- Show the found resources to see the new native query.
+
+```bash
+ddn connector show-resources <connector_name>
+```
+
+- Add the model for the native query.
+
+```bash
+ddn model add <connector_link_name> <model_name>
+```
+
+- Rebuild and serve your supergraph API.
+
+Find out more about
+[native queries for ClickHouse here](/reference/connectors/clickhouse/native-operations/native-queries.mdx).
 
   </TabItem>
 </Tabs>
@@ -3105,17 +3343,246 @@ To query data from your API, you'll first need to create a model that represents
 <Tabs groupId="source-preference" className="api-tabs">
   <TabItem value="PostgreSQL" label="PostgreSQL">
 
-    <ModelCreatePostgreSQL />
+    **Via a new table or view**
+
+```sql title="Create a new table or view in your PostgreSQL database:"
+CREATE TABLE public.comments (
+  id serial PRIMARY KEY,
+  comment text NOT NULL,
+  user_id integer NOT NULL,
+  post_id integer NOT NULL
+);
+
+INSERT INTO public.comments (comment, user_id, post_id)
+VALUES
+  ('Great post! Really enjoyed reading this.', 1, 2),
+  ('Thanks for sharing your thoughts!', 2, 1),
+  ('Interesting perspective.', 3, 1);
+```
+
+```bash title="Use the DDN CLI to introspect your PostgreSQL instance:"
+ddn connector introspect my_pg
+```
+
+```bash title="Then, add your model:"
+ddn model add my_pg comments
+```
+
+```bash title="Create a new build:"
+ddn supergraph build local
+```
+
+```bash title="Start your services:"
+ddn run docker-start
+```
+
+```bash title="Open your development console:"
+ddn console --local
+```
+
+```graphql title="You can now query your table:"
+query {
+  comments {
+    id
+    comment
+    user_id
+    post_id
+  }
+}
+```
+
+```json title="With a response like this:"
+{
+  "data": {
+    "comments": [
+      {
+        "id": 1,
+        "comment": "Great post! Really enjoyed reading this.",
+        "user_id": 1,
+        "post_id": 2
+      },
+      {
+        "id": 2,
+        "comment": "Thanks for sharing your thoughts!",
+        "user_id": 2,
+        "post_id": 1
+      },
+      {
+        "id": 3,
+        "comment": "Interesting perspective.",
+        "user_id": 3,
+        "post_id": 1
+      }
+    ]
+  }
+}
+```
 
   </TabItem>
   <TabItem value="MongoDB" label="MongoDB">
 
-    <ModelCreateMongoDB />
+    **Via a new collection**
+
+```js title="Create a new collection in your MongoDB database, and populate it with data:"
+db.createCollection("comments");
+db.comments.insertMany([
+  {
+    comment_id: 1,
+    comment: "Great post! Really enjoyed reading this.",
+    user_id: 1,
+    post_id: 2,
+  },
+  {
+    comment_id: 2,
+    comment: "Thanks for sharing your thoughts!",
+    user_id: 2,
+    post_id: 1,
+  },
+  {
+    comment_id: 3,
+    comment: "Interesting perspective.",
+    user_id: 3,
+    post_id: 1,
+  },
+]);
+```
+
+```bash title="Use the DDN CLI to introspect your MongoDB instance:"
+ddn connector introspect my_mongo
+```
+
+```bash title="Then, add your model:"
+ddn model add my_mongo comments
+```
+
+```bash title="Create a new build:"
+ddn supergraph build local
+```
+
+```bash title="Start your services:"
+ddn run docker-start
+```
+
+```bash title="Open your development console:"
+ddn console --local
+```
+
+```graphql title="You can now query your table:"
+query {
+  comments {
+    comment_id
+    comment
+    user_id
+    post_id
+  }
+}
+```
+
+```json title="With a response like this:"
+{
+  "data": {
+    "comments": [
+      {
+        "comment_id": 1,
+        "comment": "Great post! Really enjoyed reading this.",
+        "user_id": 1,
+        "post_id": 2
+      },
+      {
+        "comment_id": 2,
+        "comment": "Thanks for sharing your thoughts!",
+        "user_id": 2,
+        "post_id": 1
+      },
+      {
+        "comment_id": 3,
+        "comment": "Interesting perspective.",
+        "user_id": 3,
+        "post_id": 1
+      }
+    ]
+  }
+}
+```
 
   </TabItem>
   <TabItem value="ClickHouse" label="ClickHouse">
 
-    <ModelCreateClickHouse />
+    **Via a new table or view**
+
+```sql title="Create a new table or view in your ClickHouse database:"
+CREATE TABLE comments (
+    id UInt32,
+    comment String,
+    user_id UInt32,
+    post_id UInt32
+)
+ENGINE = MergeTree()
+ORDER BY id;
+
+INSERT INTO comments (id, comment, user_id, post_id) VALUES
+    (1, 'Great post! Really enjoyed reading this.', 1, 2),
+    (2, 'Thanks for sharing your thoughts!', 2, 1),
+    (3, 'Interesting perspective.', 3, 1);
+```
+
+```bash title="Use the DDN CLI to introspect your ClickHouse instance:"
+ddn connector introspect my_clickhouse
+```
+
+```bash title="Then, add your model:"
+ddn model add my_clickhouse comments
+```
+
+```bash title="Create a new build:"
+ddn supergraph build local
+```
+
+```bash title="Start your services:"
+ddn run docker-start
+```
+
+```bash title="Open your development console:"
+ddn console --local
+```
+
+```graphql title="You can now query your table:"
+query {
+  comments {
+    id
+    comment
+    user_id
+    post_id
+  }
+}
+```
+
+```json title="With a response like this:"
+{
+  "data": {
+    "comments": [
+      {
+        "id": 1,
+        "comment": "Great post! Really enjoyed reading this.",
+        "user_id": 1,
+        "post_id": 2
+      },
+      {
+        "id": 2,
+        "comment": "Thanks for sharing your thoughts!",
+        "user_id": 2,
+        "post_id": 1
+      },
+      {
+        "id": 3,
+        "comment": "Interesting perspective.",
+        "user_id": 3,
+        "post_id": 1
+      }
+    ]
+  }
+}
+```
 
   </TabItem>
 </Tabs>
@@ -3125,17 +3592,250 @@ To query data from your API, you'll first need to create a model that represents
 <Tabs groupId="source-preference" className="api-tabs">
   <TabItem value="PostgreSQL" label="PostgreSQL">
 
-    <ModelCreateNativeQueryTutorialPostgreSQL />
+    Within your connector's directory, you can add a new file with a `.sql` extension to define a native query.
+
+```sh title="Create a new directory to store your native queries:"
+mkdir -p app/connector/my_pg/native_operations/queries/
+```
+
+```sql title="Create a new file in your connector's directory:"
+-- native_operations/queries/order_users_of_same_age.sql
+SELECT
+    id,
+    name,
+    age,
+    RANK() OVER (PARTITION BY age ORDER BY name ASC) AS rank_within_age
+FROM
+    users
+WHERE
+    age = {{ age }}
+```
+
+Arguments are passed to the native query as variables surrounded by double curly braces `{{ }}`.
+
+```sh title="Then, use the PostgreSQL connector's plugin to add the native query to your connector's configuration:"
+ddn connector plugin \
+  --connector app/connector/my_pg/connector.yaml \
+  -- \
+  native-operation create \
+  --operation-path native_operations/queries/order_users_of_same_age.sql \
+  --kind query
+```
+
+```sh title="Introspect your PostgreSQL instance:"
+ddn connector introspect my_pg
+```
+
+```sh title="Show the found resources:"
+ddn connector show-resources my_pg
+```
+
+```sh title="Then, add your model:"
+ddn model add my_pg order_users_of_same_age
+```
+
+Let's add a few more users to make this native query example more interesting:
+
+```sql
+INSERT INTO users (name, age) VALUES ('Dan', 25), ('Erika', 25), ('Fatima', 25), ('Gabe', 25);
+```
+
+```title="Build and serve your supergraph API:"
+ddn supergraph build local
+ddn run docker-start
+```
+
+Now in your console you can run the following query to see the results:
+
+```graphql
+query UsersOfSameAge {
+  orderUsersOfSameAge(args: { age: 25 }) {
+    id
+    name
+    age
+    orderWithinAge
+  }
+}
+```
 
   </TabItem>
   <TabItem value="MongoDB" label="MongoDB">
 
-    <ModelCreateNativeQueryTutorialMongoDB />
+    Let's create a [native query](/reference/connectors/mongodb/native-operations/native-queries.mdx) that ranks users
+within their age group by name using an
+[aggregation pipeline](https://www.mongodb.com/docs/manual/core/aggregation-pipeline/).
+
+```sh title="Create a new directory to store your native queries:"
+mkdir -p <my_subgraph>/connector/<connector_name>/native_queries/
+```
+
+```json title="Create a new aggregation pipeline file in your connector's directory:"
+// native_queries/users_ranked_by_age.json
+{
+  "name": "usersRankedByAge",
+  "representation": "collection",
+  "description": "Rank users within their age group by name",
+
+  "inputCollection": "users",
+
+  "arguments": {
+    "age": { "type": { "scalar": "int" } }
+  },
+
+  "resultDocumentType": "UserRank",
+  "objectTypes": {
+    "UserRank": {
+      "fields": {
+        "_id": { "type": { "scalar": "objectId" } },
+        "name": { "type": { "scalar": "string" } },
+        "age": { "type": { "scalar": "int" } },
+        "rank": { "type": { "scalar": "int" } }
+      }
+    }
+  },
+
+  "pipeline": [
+    {
+      "$match": {
+        "age": "{{ age }}"
+      }
+    },
+    {
+      "$setWindowFields": {
+        "partitionBy": "$age",
+        "sortBy": { "name": 1 },
+        "output": {
+          "rank": {
+            "$rank": {}
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+This query will return a list of users sorted by age, and within each age group, sorted by name.
+
+```bash title="Use the DDN CLI to introspect your MongoDB instance:"
+ddn connector introspect <connector_name>
+```
+
+```bash title="Show the found resources:"
+ddn connector show-resources <connector_name>
+```
+
+```sh title="Then, add the model:"
+ddn model add <connector_name> usersRankedByAge
+```
+
+We can insert some more users to make the query result more interesting:
+
+```bash title="In your terminal, insert some more users:"
+docker exec -it mongodb mongosh my_database --eval "
+db.users.insertMany([
+  { user_id: 1, name: 'Dinesh', age: 25 },
+  { user_id: 2, name: 'Bertram', age: 25 },
+  { user_id: 3, name: 'Erlich', age: 25 }
+]);
+"
+```
+
+In the console, run the following query:
+
+```graphql
+query MyQuery {
+  usersRankedByAge(args: { age: 25 }) {
+    name
+    age
+    rank
+    id
+  }
+}
+```
+
+You should see the following output:
+
+```json
+{
+  "data": {
+    "usersRankedByAge": [
+      {
+        "name": "Alice",
+        "age": 25,
+        "rank": 1,
+        "id": "67ae6b1225e762d63aa00aa1"
+      },
+      {
+        "name": "Bertram",
+        "age": 25,
+        "rank": 2,
+        "id": "67ae85a5a437b6a167a00aa1"
+      },
+      {
+        "name": "Dinesh",
+        "age": 25,
+        "rank": 3,
+        "id": "67ae85a5a437b6a167a00aa3"
+      },
+      {
+        "name": "Erlich",
+        "age": 25,
+        "rank": 4,
+        "id": "67ae85a5a437b6a167a00aa2"
+      }
+    ]
+  }
+}
+```
 
   </TabItem>
   <TabItem value="ClickHouse" label="ClickHouse">
 
-    <ModelCreateNativeQueryTutorialClickHouse />
+    Within your connector's directory, you can add a new SQL configuration file to define a
+[native query](/reference/connectors/clickhouse/native-operations/native-queries.mdx).
+
+```sh title="Create a new directory to store your native queries:"
+mkdir -p <my_subgraph>/connector/<connector_name>/queries/
+```
+
+```sql title="Create a new file in your connector's directory:"
+// queries/UsersByName.sql
+SELECT *
+FROM "default"."users"
+WHERE "users"."name" = {name: String}
+```
+
+Note this uses the
+[ClickHouse parameter syntax](https://clickhouse.com/docs/en/interfaces/cli#cli-queries-with-parameters-syntax)
+
+```json title="Update your the queries section in your configuration.json file:"
+// configuration.json
+{
+  "tables": {},
+  "queries": {
+    "UserByName": {
+      "exposed_as": "collection",
+      "file": "queries/UserByName.sql",
+      "return_type": {
+        "kind": "definition",
+        "columns": {
+          "id": "Int32",
+          "name": "String"
+        }
+      }
+    }
+  }
+}
+```
+
+```bash title="Use the DDN CLI to introspect your ClickHouse instance:"
+ddn connector introspect <connector_name>
+```
+
+```sh title="Then, update your models:"
+ddn model add <connector_name> UserByName
+```
 
   </TabItem>
 </Tabs>
@@ -3265,13 +3965,74 @@ This will add commands with their accompanying metadata definitions to your meta
 
 <Tabs groupId="source-preference" className="api-tabs">
   <TabItem value="PostgreSQL" label="PostgreSQL">
-    <CommandCreatePostgreSQLNativeMutationHowTo />
+    The process of creating a native mutation for PostgreSQL is the following.
+
+Within your connector's directory, you can add a new file with a `.sql` extension to define a native mutation.
+
+Then, use the PostgreSQL connector's plugin to add the native query to your connector's configuration:
+
+```sh title="Then, use the PostgreSQL connector's plugin to add the native mutation to your connector's configuration:"
+ddn connector plugin \
+  --connector <subgraph_name>/<path-to-your-connector>/connector.yaml \
+  -- \
+  native-operation create \
+  --operation-path <subgraph_name>/<path-to-your-connector>/native-operations/mutations/<mutation_name>.sql \
+  --kind mutation
+```
+
+```sh title="Introspect your PostgreSQL instance:"
+ddn connector introspect <connector_name>
+```
+
+```sh title="Show the found resources:"
+ddn connector show-resources <connector_name>
+```
+
+```sh title="Then, add your model:"
+ddn command add <connector_name> <mutation_name>
+```
+
+```title="Build and serve your supergraph API:"
+ddn supergraph build local
+ddn run docker-start
+```
+
+Now in your console you can run the mutation with GraphQL.
+
+See the tutorial for creating a native mutation in PostgreSQL [here](#via-native-mutation-tutorials).
   </TabItem>
   <TabItem value="MongoDB" label="MongoDB">
-    <CommandCreateMongoDBNativeMutationHowTo />
+    In MongoDB, you can create a [native mutation](/reference/connectors/mongodb/native-operations/native-mutations.mdx) by
+using an [aggregation pipeline](https://www.mongodb.com/docs/manual/core/aggregation-pipeline/) in a JSON file by adding
+it to your connector's directory.
+
+See the syntax for MongoDB native operations [here](/reference/connectors/mongodb/native-operations/syntax.mdx).
+
+Store your native mutation expressed as an aggregation pipeline in the `native_operations/mutations` directory.
+
+```sh title="Introspect your MongoDB instance:"
+ddn connector introspect <connector_name>
+```
+
+```sh title="Show the found resources:"
+ddn connector show-resources <connector_name>
+```
+
+```sh title="Then, add your model:"
+ddn command add <connector_name> <mutation_name>
+```
+
+```title="Build and serve your supergraph API:"
+ddn supergraph build local
+ddn run docker-start
+```
+
+Now in your console you can run the mutation with GraphQL.
+
+See the tutorial for creating a native mutation in MongoDB [here](#via-native-mutation-tutorials).
   </TabItem>
   <TabItem value="ClickHouse" label="ClickHouse">
-    <CommandCreateClickHouseNativeMutationHowTo />
+    Commands are currently not supported on ClickHouse
   </TabItem>
 </Tabs>
 
@@ -3320,22 +4081,325 @@ To modify data, you first need to create a command that maps to a specific opera
 
 <Tabs groupId="source-preference" className="api-tabs">
   <TabItem value="PostgreSQL" label="PostgreSQL">
-    <CommandCreatePostgreSQL />
+    First, show a list of resouces identified by the connector.
+
+```bash title="Use the DDN CLI to introspect your PostgreSQL database:"
+ddn connector introspect <connector_name>
+```
+
+```bash
+ddn connector show-resources my_pg
+```
+
+You will see a list of Commands (Mutations) which have been automatically detected by the connector since they are
+defined by a foreign key relationship in the database.
+
+```sh title="Then, add your command:"
+ddn command add my_pg insert_users
+```
+
+Rebuild your supergraph API.
+
+```bash title="Create a new build:"
+ddn supergraph build local
+```
+
+Serve your build.
+
+```bash title="Serve your build:"
+ddn run docker-start
+ddn console --local
+```
+
+Run the mutation:
+
+```graphql
+mutation InsertUser {
+  insertUsers(objects: { age: "21", name: "Sean" }, postCheck: {}) {
+    affectedRows
+    returning {
+      id
+      name
+      age
+    }
+  }
+}
+```
+
+```json
+{
+  "data": {
+    "insertUsers": {
+      "affectedRows": 1,
+      "returning": [
+        {
+          "id": 4,
+          "name": "Sean",
+          "age": 21
+        }
+      ]
+    }
+  }
+}
+```
   </TabItem>
   <TabItem value="MongoDB" label="MongoDB">
-    <CommandCreateMongoDB />
+    The MongoDB data connector defines custom commands via
+[native mutations](/reference/connectors/mongodb/native-operations/native-mutations.mdx).
+
+Within your connector's directory, you can add a new JSON configuration file to define a native mutation.
+
+```sh title="Create a new directory to store your native mutations:"
+mkdir -p app/connector/my_mongo/native_mutations/
+```
+
+```json title="Create a new file in your connector's directory:"
+// native_mutations/insert_user.json
+{
+  "name": "insertUser",
+  "description": "Inserts a user record into the database",
+
+  "arguments": {
+    "name": { "type": { "scalar": "string" } }
+  },
+
+  "resultType": {
+    "object": "InsertUser"
+  },
+  "objectTypes": {
+    "InsertUser": {
+      "fields": {
+        "ok": { "type": { "scalar": "double" } },
+        "n": { "type": { "scalar": "int" } }
+      }
+    }
+  },
+
+  "command": {
+    "insert": "users",
+    "documents": [{ "name": "{{ name }}" }]
+  }
+}
+```
+
+```bash title="Use the DDN CLI to introspect your MongoDB instance:"
+ddn connector introspect my_mongo
+```
+
+```sh title="Show the resources discovered from your MongoDB instance:"
+ddn connector show-resources my_mongo
+```
+
+```sh title="Then, add your command:"
+ddn command add my_mongo insertUser
+```
+
+Rebuild your supergraph API.
+
+```bash title="Create a new build:"
+ddn supergraph build local
+```
+
+Serve your build.
+
+```bash title="Serve your build:"
+ddn run docker-start
+ddn console --local
+```
+
+Run the mutation:
+
+```graphql
+mutation InsertUser {
+  insertUser(name: "Sam") {
+    ok
+    n
+  }
+}
+```
+
+```json
+{
+  "data": {
+    "insertUser": {
+      "ok": 1,
+      "n": 1
+    }
+  }
+}
+```
   </TabItem>
   <TabItem value="ClickHouse" label="ClickHouse">
-    <CommandCreateClickHouse />
+    Commands are currently not supported on ClickHouse.
   </TabItem>
   <TabItem value="TypeScript" label="Node.js TypeScript">
-    <CommandCreateLambdaTypescript />
+    ```sh title="Initalize a new connector and select hasura/nodejs from the list:"
+ddn connector init my_ts -i
+```
+
+```ts title="Replace the functions.ts contents with the following:"
+/**
+ * @readonly
+ */
+export function shoutName(name: string): string {
+  return name.toUpperCase();
+}
+```
+
+```bash title="Introspect the connector:"
+ddn connector introspect my_ts
+```
+
+```bash title="Track the function:"
+ddn command add my_ts shoutName
+```
+
+```bash title="Create a new build:"
+ddn supergraph build local
+```
+
+```bash title="Start your services:"
+ddn run docker-start
+```
+
+```bash title="Open your development console:"
+ddn console --local
+```
+
+```graphql title="You can now query your expanded table with the transformed name:"
+query ShoutTheName {
+  shoutName(name: "Alice")
+}
+```
+
+```json title="With a response like this:"
+{
+  "data": {
+    "shoutName": "ALICE"
+  }
+}
+```
   </TabItem>
   <TabItem value="Python" label="Python">
-    <CommandCreateLambdaPython />
+    ```sh title="Initalize a new connector and select hasura/python from the list:"
+ddn connector init my_python -i
+```
+
+```python title="Replace the functions.py contents with the following:"
+from hasura_ndc import start
+from hasura_ndc.function_connector import FunctionConnector
+
+connector = FunctionConnector()
+
+@connector.register_query
+def shout_name(name: str) -> str:
+  return name.upper()
+
+if __name__ == "__main__":
+  start(connector)
+```
+
+```bash title="Introspect the connector:"
+ddn connector introspect my_python
+```
+
+```bash title="Track the function:"
+ddn command add my_python shout_name
+```
+
+```bash title="Create a new build:"
+ddn supergraph build local
+```
+
+```bash title="Start your services:"
+ddn run docker-start
+```
+
+```bash title="Open your development console:"
+ddn console --local
+```
+
+```graphql title="You can now query your expanded table with the transformed name:"
+query ShoutTheName {
+  shoutName(name: "Alice")
+}
+```
+
+```json title="With a response like this:"
+{
+  "data": {
+    "shoutName": "ALICE"
+  }
+}
+```
   </TabItem>
   <TabItem value="Go" label="Go">
-    <CommandCreateLambdaGo />
+    ```sh title="Initalize a new connector and select hasura/go from the list:"
+ddn connector init my_go -i
+```
+
+```go title="Rename hello.go to nameToUpperCase.go:"
+package functions
+
+import (
+  "context"
+  "fmt"
+  "hasura-ndc.dev/ndc-go/types"
+  "strings"
+)
+
+// NameArguments defines the input arguments for the function
+type NameArguments struct {
+  Name string `json:"name"` // required argument
+}
+
+// NameResult defines the output result for the function
+type NameResult string
+
+// FunctionShoutName converts a name string to uppercase
+func FunctionShoutName(ctx context.Context, state *types.State, arguments *NameArguments) (*NameResult, error) {
+  if arguments.Name == "" {
+    return nil, fmt.Errorf("name cannot be empty")
+  }
+
+  upperCaseName := NameResult(strings.ToUpper(arguments.Name))
+  return &upperCaseName, nil
+}
+```
+
+```bash title="Introspect the connector:"
+ddn connector introspect my_go
+```
+
+```bash title="Track the function:"
+ddn command add my_go shoutName
+```
+
+```bash title="Create a new build:"
+ddn supergraph build local
+```
+
+```bash title="Start your services:"
+ddn run docker-start
+```
+
+```bash title="Open your development console:"
+ddn console --local
+```
+
+```graphql title="You can now query your expanded table with the transformed name:"
+query ShoutTheName {
+  shoutName(name: "Alice")
+}
+```
+
+```json title="With a response like this:"
+{
+  "data": {
+    "shoutName": "ALICE"
+  }
+}
+```
   </TabItem>
 </Tabs>
 
@@ -3343,13 +4407,131 @@ To modify data, you first need to create a command that maps to a specific opera
 
 <Tabs groupId="source-preference" className="api-tabs">
   <TabItem value="PostgreSQL" label="PostgreSQL">
-    <CommandCreatePostgreSQLNativeMutationTutorial />
+    Within your connector's directory, you can add a new file with a `.sql` extension to define a native mutation.
+
+```sh title="Create a new directory to store your native mutations:"
+mkdir -p app/connector/my_pg/native_operations/mutations/
+```
+
+Let's create a mutation using a `SQL` `UPDATE` statement that updates the title of all posts from user's of that age by
+appending their age to the title.
+
+```sql title="Create a new file in your connector's directory:"
+-- native_operations/mutations/update_post_titles_by_age.sql
+UPDATE posts
+SET title = CASE
+    WHEN title ~ ' - age \d+
   </TabItem>
   <TabItem value="MongoDB" label="MongoDB">
-    <CommandCreateMongoDBNativeMutationTutorial />
+    Let's create a [native mutation](/reference/connectors/mongodb/native-operations/native-mutations.mdx) that adds a new
+user to the database with a name and age using an
+[aggregation pipeline](https://www.mongodb.com/docs/manual/core/aggregation-pipeline/) in a JSON file.
+
+See the syntax for MongoDB native operations [here](/reference/connectors/mongodb/native-operations/syntax.mdx).
+
+```sh title="Create a new directory to store your native mutations:"
+mkdir -p app/connector/my_mongo/native_operations/mutations/
+```
+
+```json title="Create a new native mutation file in your connector's directory:"
+// native_mutations/create_user.json
+{
+  "name": "createUser",
+  "description": "Create a new user with name and age",
+  "resultType": {
+    "object": "CreateUserResult"
+  },
+  "arguments": {
+    "name": {
+      "type": {
+        "scalar": "string"
+      }
+    },
+    "age": {
+      "type": {
+        "scalar": "int"
+      }
+    }
+  },
+  "objectTypes": {
+    "CreateUserResult": {
+      "fields": {
+        "ok": {
+          "type": {
+            "scalar": "int"
+          }
+        },
+        "n": {
+          "type": {
+            "scalar": "int"
+          }
+        }
+      }
+    }
+  },
+  "command": {
+    "insert": "users",
+    "documents": [
+      {
+        "name": "{{ name }}",
+        "age": "{{ age }}",
+        "user_id": {
+          "$size": {
+            "$ifNull": [
+              {
+                "$objectToArray": "$ROOT"
+              },
+              []
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+```sh title="Introspect your MongoDB instance:"
+ddn connector introspect my_mongo
+```
+
+```sh title="Show the found resources:"
+ddn connector show-resources my_mongo
+```
+
+```sh title="Then, add your model:"
+ddn command add my_mongo createUser
+```
+
+```title="Build and serve your supergraph API:"
+ddn supergraph build local
+ddn run docker-start
+```
+
+Now in your console you can run the following query to see the results:
+
+```graphql title="Run the following mutation:"
+mutation CreateUser {
+  createUser(age: 25, name: "Peter") {
+    n
+    ok
+  }
+}
+```
+
+```json title="The response will be:"
+{
+  "data": {
+    "createUser": {
+      "n": 1,
+      "ok": 1
+    }
+  }
+}
+```
   </TabItem>
   <TabItem value="ClickHouse" label="ClickHouse">
-    <CommandCreateClickHouseNativeMutationTutorial />
+    Commands are currently not supported on ClickHouse
   </TabItem>
 </Tabs>
 
@@ -3366,22 +4548,861 @@ Your underlying data source may change over time. You can update your command to
 
 <Tabs groupId="source-preference" className="api-tabs">
   <TabItem value="PostgreSQL" label="PostgreSQL">
-    <CommandUpdatePostgreSQL />
+    For an automatically detected command, you can update the command metadata.
+
+```bash title="Use the DDN CLI to introspect your PostgreSQL database:"
+ddn connector introspect my_pg
+```
+
+```sh title="Show the resources discovered from your PostgreSQL database:"
+ddn connector show-resources my_pg
+```
+
+```sh title="Then, update your commands:"
+ddn command update my_pg "*"
+```
   </TabItem>
   <TabItem value="MongoDB" label="MongoDB">
-    <CommandUpdateMongoDB />
+    For example if you have a [native mutation](/reference/connectors/mongodb/native-operations/native-mutations.mdx) that
+inserts a user you can modify it to include a second field on new documents.
+
+```json title="Edit the existing native mutation in your connector's directory:"
+// native_mutations/create_user.json
+{
+  "name": "createUser",
+  "description": "Create a new user with name and age",
+  "resultType": {
+    "object": "CreateUserResult"
+  },
+  "arguments": {
+    "name": {
+      "type": {
+        "scalar": "string"
+      }
+    },
+    "age": {
+      "type": {
+        "scalar": "int"
+      }
+    },
+    "role": {
+      "type": {
+        "nullable": {
+          "scalar": "string"
+        }
+      }
+    } // add an argument
+  },
+  "objectTypes": {
+    "CreateUserResult": {
+      "fields": {
+        "ok": {
+          "type": {
+            "scalar": "int"
+          }
+        },
+        "n": {
+          "type": {
+            "scalar": "int"
+          }
+        }
+      }
+    }
+  },
+  "command": {
+    "insert": "users",
+    "documents": [
+      {
+        "name": "{{ name }}",
+        "age": "{{ age }}",
+        "role": "{{ role }}",
+        "user_id": {
+          "$size": {
+            "$ifNull": [
+              {
+                "$objectToArray": "$ROOT"
+              },
+              []
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+```bash title="Use the DDN CLI to introspect your MongoDB instance:"
+ddn connector introspect my_mongo
+```
+
+```sh title="Show the resources discovered from your MongoDB instance:"
+ddn connector show-resources my_mongo
+```
+
+Then, either update the specific command or update all commands.
+
+```sh title="Update the specific command:"
+ddn command update my_mongo insertUser
+```
+
+```sh title="Update all commands:"
+ddn command update my_mongo "*"
+```
   </TabItem>
   <TabItem value="ClickHouse" label="ClickHouse">
-    <CommandUpdateClickHouse />
+    Commands are currently not supported on ClickHouse.
   </TabItem>
   <TabItem value="TypeScript" label="Node.js TypeScript">
-    <CommandUpdateLambdaTypescript />
+    You can update the command metadata for the Node.js lambda connector with the following workflow.
+
+Make changes to the function in your editor, then run the following commands to update the command metadata.
+
+```bash title="Use the DDN CLI to introspect your connector:"
+ddn connector introspect my_ts
+```
+
+```sh title="Show the resources discovered from your connector:"
+ddn connector show-resources my_ts
+```
+
+```sh title="Then, update your command:"
+ddn command update my_ts shoutName
+```
+
+```sh title="Or, update all commands:"
+ddn command update my_ts "*"
+```
   </TabItem>
   <TabItem value="Python" label="Python">
-    <CommandUpdateLambdaPython />
+    You can update the command metadata for the Python lambda connector with the following workflow.
+
+Make changes to the function in your editor, then run the following commands to update the command metadata.
+
+```bash title="Use the DDN CLI to introspect your connector:"
+ddn connector introspect my_py
+```
+
+```sh title="Show the resources discovered from your connector:"
+ddn connector show-resources my_py
+```
+
+```sh title="Then, update your command:"
+ddn command update my_py shout_name
+```
+
+```sh title="Or, update all commands:"
+ddn command update my_py "*"
+```
   </TabItem>
   <TabItem value="Go" label="Go">
-    <CommandUpdateLambdaGo />
+    You can update the command metadata for the Go lambda connector with the following workflow.
+
+Make changes to the function in your editor, then run the following commands to update the command metadata.
+
+```bash title="Use the DDN CLI to introspect your connector:"
+ddn connector introspect my_go
+```
+
+```sh title="Show the resources discovered from your connector:"
+ddn connector show-resources my_go
+```
+
+```sh title="Then, update your command:"
+ddn command update my_go shoutName
+```
+
+```sh title="Or, update all commands:"
+ddn command update my_go "*"
+```
+  </TabItem>
+</Tabs>
+
+### Deleting a command
+
+```bash title="If you no longer need a command, you can delete it with the CLI:"
+ddn command remove <command_name>
+```
+
+## Reference
+
+You can learn more about commands in the metadata reference [docs](/reference/metadata-reference/commands.mdx).
+ THEN regexp_replace(title, ' - age \d+
+  </TabItem>
+  <TabItem value="MongoDB" label="MongoDB">
+    Let's create a [native mutation](/reference/connectors/mongodb/native-operations/native-mutations.mdx) that adds a new
+user to the database with a name and age using an
+[aggregation pipeline](https://www.mongodb.com/docs/manual/core/aggregation-pipeline/) in a JSON file.
+
+See the syntax for MongoDB native operations [here](/reference/connectors/mongodb/native-operations/syntax.mdx).
+
+```sh title="Create a new directory to store your native mutations:"
+mkdir -p app/connector/my_mongo/native_operations/mutations/
+```
+
+```json title="Create a new native mutation file in your connector's directory:"
+// native_mutations/create_user.json
+{
+  "name": "createUser",
+  "description": "Create a new user with name and age",
+  "resultType": {
+    "object": "CreateUserResult"
+  },
+  "arguments": {
+    "name": {
+      "type": {
+        "scalar": "string"
+      }
+    },
+    "age": {
+      "type": {
+        "scalar": "int"
+      }
+    }
+  },
+  "objectTypes": {
+    "CreateUserResult": {
+      "fields": {
+        "ok": {
+          "type": {
+            "scalar": "int"
+          }
+        },
+        "n": {
+          "type": {
+            "scalar": "int"
+          }
+        }
+      }
+    }
+  },
+  "command": {
+    "insert": "users",
+    "documents": [
+      {
+        "name": "{{ name }}",
+        "age": "{{ age }}",
+        "user_id": {
+          "$size": {
+            "$ifNull": [
+              {
+                "$objectToArray": "$ROOT"
+              },
+              []
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+```sh title="Introspect your MongoDB instance:"
+ddn connector introspect my_mongo
+```
+
+```sh title="Show the found resources:"
+ddn connector show-resources my_mongo
+```
+
+```sh title="Then, add your model:"
+ddn command add my_mongo createUser
+```
+
+```title="Build and serve your supergraph API:"
+ddn supergraph build local
+ddn run docker-start
+```
+
+Now in your console you can run the following query to see the results:
+
+```graphql title="Run the following mutation:"
+mutation CreateUser {
+  createUser(age: 25, name: "Peter") {
+    n
+    ok
+  }
+}
+```
+
+```json title="The response will be:"
+{
+  "data": {
+    "createUser": {
+      "n": 1,
+      "ok": 1
+    }
+  }
+}
+```
+  </TabItem>
+  <TabItem value="ClickHouse" label="ClickHouse">
+    Commands are currently not supported on ClickHouse
+  </TabItem>
+</Tabs>
+
+:::info Lambda connectors
+
+Lambda connectors allow you to execute custom business logic directly via your API. You can learn more about Lambda
+connectors in the [docs](/business-logic/overview.mdx).
+
+:::
+
+### Updating a command
+
+Your underlying data source may change over time. You can update your command to reflect these changes.
+
+<Tabs groupId="source-preference" className="api-tabs">
+  <TabItem value="PostgreSQL" label="PostgreSQL">
+    For an automatically detected command, you can update the command metadata.
+
+```bash title="Use the DDN CLI to introspect your PostgreSQL database:"
+ddn connector introspect my_pg
+```
+
+```sh title="Show the resources discovered from your PostgreSQL database:"
+ddn connector show-resources my_pg
+```
+
+```sh title="Then, update your commands:"
+ddn command update my_pg "*"
+```
+  </TabItem>
+  <TabItem value="MongoDB" label="MongoDB">
+    For example if you have a [native mutation](/reference/connectors/mongodb/native-operations/native-mutations.mdx) that
+inserts a user you can modify it to include a second field on new documents.
+
+```json title="Edit the existing native mutation in your connector's directory:"
+// native_mutations/create_user.json
+{
+  "name": "createUser",
+  "description": "Create a new user with name and age",
+  "resultType": {
+    "object": "CreateUserResult"
+  },
+  "arguments": {
+    "name": {
+      "type": {
+        "scalar": "string"
+      }
+    },
+    "age": {
+      "type": {
+        "scalar": "int"
+      }
+    },
+    "role": {
+      "type": {
+        "nullable": {
+          "scalar": "string"
+        }
+      }
+    } // add an argument
+  },
+  "objectTypes": {
+    "CreateUserResult": {
+      "fields": {
+        "ok": {
+          "type": {
+            "scalar": "int"
+          }
+        },
+        "n": {
+          "type": {
+            "scalar": "int"
+          }
+        }
+      }
+    }
+  },
+  "command": {
+    "insert": "users",
+    "documents": [
+      {
+        "name": "{{ name }}",
+        "age": "{{ age }}",
+        "role": "{{ role }}",
+        "user_id": {
+          "$size": {
+            "$ifNull": [
+              {
+                "$objectToArray": "$ROOT"
+              },
+              []
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+```bash title="Use the DDN CLI to introspect your MongoDB instance:"
+ddn connector introspect my_mongo
+```
+
+```sh title="Show the resources discovered from your MongoDB instance:"
+ddn connector show-resources my_mongo
+```
+
+Then, either update the specific command or update all commands.
+
+```sh title="Update the specific command:"
+ddn command update my_mongo insertUser
+```
+
+```sh title="Update all commands:"
+ddn command update my_mongo "*"
+```
+  </TabItem>
+  <TabItem value="ClickHouse" label="ClickHouse">
+    Commands are currently not supported on ClickHouse.
+  </TabItem>
+  <TabItem value="TypeScript" label="Node.js TypeScript">
+    You can update the command metadata for the Node.js lambda connector with the following workflow.
+
+Make changes to the function in your editor, then run the following commands to update the command metadata.
+
+```bash title="Use the DDN CLI to introspect your connector:"
+ddn connector introspect my_ts
+```
+
+```sh title="Show the resources discovered from your connector:"
+ddn connector show-resources my_ts
+```
+
+```sh title="Then, update your command:"
+ddn command update my_ts shoutName
+```
+
+```sh title="Or, update all commands:"
+ddn command update my_ts "*"
+```
+  </TabItem>
+  <TabItem value="Python" label="Python">
+    You can update the command metadata for the Python lambda connector with the following workflow.
+
+Make changes to the function in your editor, then run the following commands to update the command metadata.
+
+```bash title="Use the DDN CLI to introspect your connector:"
+ddn connector introspect my_py
+```
+
+```sh title="Show the resources discovered from your connector:"
+ddn connector show-resources my_py
+```
+
+```sh title="Then, update your command:"
+ddn command update my_py shout_name
+```
+
+```sh title="Or, update all commands:"
+ddn command update my_py "*"
+```
+  </TabItem>
+  <TabItem value="Go" label="Go">
+    You can update the command metadata for the Go lambda connector with the following workflow.
+
+Make changes to the function in your editor, then run the following commands to update the command metadata.
+
+```bash title="Use the DDN CLI to introspect your connector:"
+ddn connector introspect my_go
+```
+
+```sh title="Show the resources discovered from your connector:"
+ddn connector show-resources my_go
+```
+
+```sh title="Then, update your command:"
+ddn command update my_go shoutName
+```
+
+```sh title="Or, update all commands:"
+ddn command update my_go "*"
+```
+  </TabItem>
+</Tabs>
+
+### Deleting a command
+
+```bash title="If you no longer need a command, you can delete it with the CLI:"
+ddn command remove <command_name>
+```
+
+## Reference
+
+You can learn more about commands in the metadata reference [docs](/reference/metadata-reference/commands.mdx).
+, ' - age ' || {{ age }})
+    ELSE title || ' - age ' || {{ age }}
+END
+FROM users
+WHERE posts.user_id = users.id
+    AND users.age = {{ age }}
+RETURNING
+    posts.id,
+    posts.title,
+    posts.user_id,
+    users.name,
+    users.age;
+```
+
+Arguments are passed to the native mutation as variables surrounded by double curly braces `{{ }}`.
+
+```sh title="Then, use the PostgreSQL connector's plugin to add the native mutation to your connector's configuration:"
+ddn connector plugin \
+  --connector app/connector/my_pg/connector.yaml \
+  -- \
+  native-operation create \
+  --operation-path native_operations/mutations/update_post_titles_by_age.sql \
+  --kind mutation
+```
+
+```sh title="Introspect your PostgreSQL instance:"
+ddn connector introspect my_pg
+```
+
+```sh title="Show the found resources:"
+ddn connector show-resources my_pg
+```
+
+```sh title="Then, add your model:"
+ddn command add my_pg update_post_titles_by_age
+```
+
+```title="Build and serve your supergraph API:"
+ddn supergraph build local
+ddn run docker-start
+```
+
+Now in your console you can run the following mutation to see the results:
+
+```graphql title="Run the following mutation:"
+mutation UpdatePostTitlesByAge {
+  updatePostTitlesByAge(age: "25") {
+    affectedRows
+    returning {
+      id
+      title
+    }
+  }
+}
+```
+
+```json title="The response will be:"
+{
+  "data": {
+    "updatePostTitlesByAge": {
+      "affectedRows": 2,
+      "returning": [
+        {
+          "id": 1,
+          "title": "My First Post - age 25"
+        },
+        {
+          "id": 2,
+          "title": "Another Post - age 25"
+        }
+      ]
+    }
+  }
+}
+```
+  </TabItem>
+  <TabItem value="MongoDB" label="MongoDB">
+    Let's create a [native mutation](/reference/connectors/mongodb/native-operations/native-mutations.mdx) that adds a new
+user to the database with a name and age using an
+[aggregation pipeline](https://www.mongodb.com/docs/manual/core/aggregation-pipeline/) in a JSON file.
+
+See the syntax for MongoDB native operations [here](/reference/connectors/mongodb/native-operations/syntax.mdx).
+
+```sh title="Create a new directory to store your native mutations:"
+mkdir -p app/connector/my_mongo/native_operations/mutations/
+```
+
+```json title="Create a new native mutation file in your connector's directory:"
+// native_mutations/create_user.json
+{
+  "name": "createUser",
+  "description": "Create a new user with name and age",
+  "resultType": {
+    "object": "CreateUserResult"
+  },
+  "arguments": {
+    "name": {
+      "type": {
+        "scalar": "string"
+      }
+    },
+    "age": {
+      "type": {
+        "scalar": "int"
+      }
+    }
+  },
+  "objectTypes": {
+    "CreateUserResult": {
+      "fields": {
+        "ok": {
+          "type": {
+            "scalar": "int"
+          }
+        },
+        "n": {
+          "type": {
+            "scalar": "int"
+          }
+        }
+      }
+    }
+  },
+  "command": {
+    "insert": "users",
+    "documents": [
+      {
+        "name": "{{ name }}",
+        "age": "{{ age }}",
+        "user_id": {
+          "$size": {
+            "$ifNull": [
+              {
+                "$objectToArray": "$ROOT"
+              },
+              []
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+```sh title="Introspect your MongoDB instance:"
+ddn connector introspect my_mongo
+```
+
+```sh title="Show the found resources:"
+ddn connector show-resources my_mongo
+```
+
+```sh title="Then, add your model:"
+ddn command add my_mongo createUser
+```
+
+```title="Build and serve your supergraph API:"
+ddn supergraph build local
+ddn run docker-start
+```
+
+Now in your console you can run the following query to see the results:
+
+```graphql title="Run the following mutation:"
+mutation CreateUser {
+  createUser(age: 25, name: "Peter") {
+    n
+    ok
+  }
+}
+```
+
+```json title="The response will be:"
+{
+  "data": {
+    "createUser": {
+      "n": 1,
+      "ok": 1
+    }
+  }
+}
+```
+  </TabItem>
+  <TabItem value="ClickHouse" label="ClickHouse">
+    Commands are currently not supported on ClickHouse
+  </TabItem>
+</Tabs>
+
+:::info Lambda connectors
+
+Lambda connectors allow you to execute custom business logic directly via your API. You can learn more about Lambda
+connectors in the [docs](/business-logic/overview.mdx).
+
+:::
+
+### Updating a command
+
+Your underlying data source may change over time. You can update your command to reflect these changes.
+
+<Tabs groupId="source-preference" className="api-tabs">
+  <TabItem value="PostgreSQL" label="PostgreSQL">
+    For an automatically detected command, you can update the command metadata.
+
+```bash title="Use the DDN CLI to introspect your PostgreSQL database:"
+ddn connector introspect my_pg
+```
+
+```sh title="Show the resources discovered from your PostgreSQL database:"
+ddn connector show-resources my_pg
+```
+
+```sh title="Then, update your commands:"
+ddn command update my_pg "*"
+```
+  </TabItem>
+  <TabItem value="MongoDB" label="MongoDB">
+    For example if you have a [native mutation](/reference/connectors/mongodb/native-operations/native-mutations.mdx) that
+inserts a user you can modify it to include a second field on new documents.
+
+```json title="Edit the existing native mutation in your connector's directory:"
+// native_mutations/create_user.json
+{
+  "name": "createUser",
+  "description": "Create a new user with name and age",
+  "resultType": {
+    "object": "CreateUserResult"
+  },
+  "arguments": {
+    "name": {
+      "type": {
+        "scalar": "string"
+      }
+    },
+    "age": {
+      "type": {
+        "scalar": "int"
+      }
+    },
+    "role": {
+      "type": {
+        "nullable": {
+          "scalar": "string"
+        }
+      }
+    } // add an argument
+  },
+  "objectTypes": {
+    "CreateUserResult": {
+      "fields": {
+        "ok": {
+          "type": {
+            "scalar": "int"
+          }
+        },
+        "n": {
+          "type": {
+            "scalar": "int"
+          }
+        }
+      }
+    }
+  },
+  "command": {
+    "insert": "users",
+    "documents": [
+      {
+        "name": "{{ name }}",
+        "age": "{{ age }}",
+        "role": "{{ role }}",
+        "user_id": {
+          "$size": {
+            "$ifNull": [
+              {
+                "$objectToArray": "$ROOT"
+              },
+              []
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+```bash title="Use the DDN CLI to introspect your MongoDB instance:"
+ddn connector introspect my_mongo
+```
+
+```sh title="Show the resources discovered from your MongoDB instance:"
+ddn connector show-resources my_mongo
+```
+
+Then, either update the specific command or update all commands.
+
+```sh title="Update the specific command:"
+ddn command update my_mongo insertUser
+```
+
+```sh title="Update all commands:"
+ddn command update my_mongo "*"
+```
+  </TabItem>
+  <TabItem value="ClickHouse" label="ClickHouse">
+    Commands are currently not supported on ClickHouse.
+  </TabItem>
+  <TabItem value="TypeScript" label="Node.js TypeScript">
+    You can update the command metadata for the Node.js lambda connector with the following workflow.
+
+Make changes to the function in your editor, then run the following commands to update the command metadata.
+
+```bash title="Use the DDN CLI to introspect your connector:"
+ddn connector introspect my_ts
+```
+
+```sh title="Show the resources discovered from your connector:"
+ddn connector show-resources my_ts
+```
+
+```sh title="Then, update your command:"
+ddn command update my_ts shoutName
+```
+
+```sh title="Or, update all commands:"
+ddn command update my_ts "*"
+```
+  </TabItem>
+  <TabItem value="Python" label="Python">
+    You can update the command metadata for the Python lambda connector with the following workflow.
+
+Make changes to the function in your editor, then run the following commands to update the command metadata.
+
+```bash title="Use the DDN CLI to introspect your connector:"
+ddn connector introspect my_py
+```
+
+```sh title="Show the resources discovered from your connector:"
+ddn connector show-resources my_py
+```
+
+```sh title="Then, update your command:"
+ddn command update my_py shout_name
+```
+
+```sh title="Or, update all commands:"
+ddn command update my_py "*"
+```
+  </TabItem>
+  <TabItem value="Go" label="Go">
+    You can update the command metadata for the Go lambda connector with the following workflow.
+
+Make changes to the function in your editor, then run the following commands to update the command metadata.
+
+```bash title="Use the DDN CLI to introspect your connector:"
+ddn connector introspect my_go
+```
+
+```sh title="Show the resources discovered from your connector:"
+ddn connector show-resources my_go
+```
+
+```sh title="Then, update your command:"
+ddn command update my_go shoutName
+```
+
+```sh title="Or, update all commands:"
+ddn command update my_go "*"
+```
   </TabItem>
 </Tabs>
 
@@ -3572,17 +5593,295 @@ These tutorials follow on from the tutorials in the
 <Tabs groupId="source-preference" className="api-tabs">
   <TabItem value="PostgreSQL" label="PostgreSQL">
 
-<PostgresRelationshipCreateModelToModel />
+Following on from the [PostgreSQL tutorial in the How to Build with DDN](/how-to-build-with-ddn/with-postgresql.mdx)
+section, you can create a relationship between two models which already have a foreign key relationship defined in the
+database.
+
+In the tutorial, we created a `posts` to `users` relationship. Let's now add the inverse, detected automatically by the
+same foreign key as a relationship between the `Users` to `Posts` models.
+
+```bash title="View the available resources from the data connector:"
+ddn connector show-resources my_pg
+```
+
+Add the users realtionship which was found automatically due to the foreign key.
+
+```bash title="Add the relationship:"
+ddn relationship add my_pg users
+```
+
+Now, you can build your supergraph API, serve it, and query your data.
+
+```bash title="Build your supergraph API:"
+ddn supergraph build local
+ddn run docker-start
+```
+
+Now you can query your data with your relationship in the console get users and their posts.
+
+```bash title="Query your data:"
+ddn console --local
+```
+
+```graphql
+query UsersWithPosts {
+  users {
+    id
+    posts {
+      title
+    }
+    name
+  }
+}
+```
+
+```json
+{
+  "data": {
+    "users": [
+      {
+        "id": 1,
+        "name": "Alice"
+        "posts": [
+          {
+            "title": "My First Post"
+          },
+          {
+            "title": "Another Post"
+          }
+        ],
+      },
+      {
+        "id": 2,
+        "name": "Bob"
+        "posts": [
+          {
+            "title": "Bob's Post"
+          }
+        ],
+
+      },
+      {
+        "id": 3,
+        "name": "Charlie"
+        "posts": [
+          {
+            "title": "Hello World"
+          }
+        ],
+      }
+    ]
+  }
+}
+```
 
   </TabItem>
   <TabItem value="MongoDB" label="MongoDB">
 
-<MongoDBRelationshipCreateModelToModel />
+Following on from the [MongoDB tutorial in the How to Build with DDN](/how-to-build-with-ddn/with-mongodb.mdx) section,
+you can manually create a relationship between two models which have no foreign-key-like relationship defined in the
+database which the data connector would be able to detect.
+
+In the tutorial, we created a `posts` to `users` relationship. Let's now add the inverse as a relationship from the
+`Users` to `Posts` models.
+
+```yaml title="Open the Users.hml file and add the following to the end:"
+---
+kind: Relationship
+version: v1
+definition:
+  name: posts
+  sourceType: Users
+  target:
+    model:
+      name: Posts
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+```
+
+Now you can build your supergraph API, serve it, and query your data.
+
+```bash title="Build and run your supergraph API:"
+ddn supergraph build local
+ddn run docker-start
+```
+
+Now you can query your data with your relationship in the console get users and their posts.
+
+```bash title="Query your data:"
+ddn console --local
+```
+
+```graphql
+query UsersWithPosts {
+  users {
+    name
+    age
+    posts {
+      id
+      content
+      title
+    }
+  }
+}
+```
+
+```json
+{
+  "data": {
+    "users": [
+      {
+        "name": "Alice",
+        "age": 25,
+        "posts": [
+          {
+            "id": "67585252ee01950f5dfc0421",
+            "content": "This is Alice's first post.",
+            "title": "My First Post"
+          },
+          {
+            "id": "67585252ee01950f5dfc0422",
+            "content": "Alice writes again!",
+            "title": "Another Post"
+          }
+        ]
+      },
+      {
+        "name": "Bob",
+        "age": 30,
+        "posts": [
+          {
+            "id": "67585252ee01950f5dfc0423",
+            "content": "Bob shares his thoughts.",
+            "title": "Bob's Post"
+          }
+        ]
+      },
+      {
+        "name": "Charlie",
+        "age": 35,
+        "posts": [
+          {
+            "id": "67585252ee01950f5dfc0424",
+            "content": "Charlie joins the conversation.",
+            "title": "Hello World"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
 
   </TabItem>
   <TabItem value="ClickHouse" label="ClickHouse">
 
-<ClickHouseRelationshipCreateModelToModel />
+Following on from the [ClickHouse tutorial in the How to Build with DDN](/how-to-build-with-ddn/with-clickhouse.mdx)
+section, you can manually create a relationship between two models which have no foreign-key-like relationship defined
+in the database which the data connector would be able to detect.
+
+In the tutorial, we created a `posts` to `users` relationship. Let's now add the inverse as a relationship from the
+`Users` to `Posts` models.
+
+```yaml title="Open the Users.hml file and add the following to the end:"
+---
+kind: Relationship
+version: v1
+definition:
+  name: posts
+  sourceType: Users
+  target:
+    model:
+      name: Posts
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: userId
+      target:
+        modelField:
+          - fieldName: userId
+```
+
+Now you can build your supergraph API, serve it, and query your data.
+
+```bash title="Build and run your supergraph API:"
+ddn supergraph build local
+ddn run docker-start
+```
+
+Now you can query your data with your relationship in the console get users and their posts.
+
+```bash title="Query your data:"
+ddn console --local
+```
+
+```graphql
+query UsersWithPosts {
+  users {
+    name
+    age
+    posts {
+      content
+      title
+      userId
+    }
+  }
+}
+```
+
+```json
+{
+  "data": {
+    "users": [
+      {
+        "name": "Alice",
+        "age": 25,
+        "posts": [
+          {
+            "content": "This is Alice's first post.",
+            "title": "My First Post",
+            "userId": 1
+          },
+          {
+            "content": "Alice writes again!",
+            "title": "Another Post",
+            "userId": 1
+          }
+        ]
+      },
+      {
+        "name": "Bob",
+        "age": 30,
+        "posts": [
+          {
+            "content": "Bob shares his thoughts.",
+            "title": "Bob's Post",
+            "userId": 2
+          }
+        ]
+      },
+      {
+        "name": "Charlie",
+        "age": 35,
+        "posts": [
+          {
+            "content": "Charlie joins the conversation.",
+            "title": "Hello World",
+            "userId": 3
+          }
+        ]
+      }
+    ]
+  }
+}
+```
 
   </TabItem>
 </Tabs>
@@ -17588,11 +19887,35 @@ This initial build serves as the foundation for future subgraph builds.
 
 Navigate to your project's console and invite collaborators based on their roles:
 
-<Roles />
+| Role                      | Abilities                                                                                            |
+| ------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Owner**                 | All Project abilities including deletion. At this time, project ownership is not transferable.       |
+| **Admin**                 | Same as a Project Owner, excluding deletion of the project.                                          |
+| **Read Only**             | Only explore and visualize the supergraph.                                                           |
+| **Subgraph Admin** \*     | All subgraph development-related abilities: create subgraph build, apply subgraph build to endpoint. |
+| **Subgraph Developer** \* | Same as a subgraph admin, excluding the ability to apply subgraph build to endpoint.                 |
+
+\* Subgraph roles are only available on [DDN Advanced projects](https://hasura.io/pricing/ddn).
 
 The following are the detailed permissions for the above roles:
 
-<Permissions />
+| Permissions                                                         | Owner | Admin | Read Only | Subgraph<br/> Admin \* | Subgraph<br/> Developer \* |
+| ------------------------------------------------------------------- | ----- | ----- | --------- | ---------------------- | -------------------------- |
+| View Supergraph Explorer                                            | ✅    | ✅    | ✅        | ✅                     | ✅                         |
+| Make GraphQL API requests                                           | ✅    | ✅    | ✅        | ✅                     | ✅                         |
+| View project insights                                               | ✅    | ✅    | ✅        | ✅                     | ✅                         |
+| Create supergraph builds<br/> - using all subgraphs' metadata       | ✅    | ✅    | ❌        | ❌                     | ❌                         |
+| Create supergraph builds<br/> - using single subgraph's metadata \* | ✅    | ✅    | ❌        | ✅                     | ✅                         |
+| Apply supergraph builds to project endpoint                         | ✅    | ✅    | ❌        | ❌                     | ❌                         |
+| Create subgraph builds \*                                           | ✅    | ✅    | ❌        | ✅                     | ✅                         |
+| Apply subgraph builds to project endpoint \*                        | ✅    | ✅    | ❌        | ✅                     | ❌                         |
+| Admin permissions on all subgraphs                                  | ✅    | ✅    | ❌        | ❌                     | ❌                         |
+| Create / Delete subgraphs                                           | ✅    | ✅    | ❌        | ❌                     | ❌                         |
+| Add / Remove collaborators                                          | ✅    | ✅    | ❌        | ❌                     | ❌                         |
+| Manage project plans and billing                                    | ✅    | ✅    | ❌        | ❌                     | ❌                         |
+| Delete project                                                      | ✅    | ❌    | ❌        | ❌                     | ❌                         |
+
+\* Only available on [DDN Advanced projects](https://hasura.io/pricing/ddn).
 
 Each collaborator will receive an invitation to join the project and can proceed to add their subgraphs.
 
@@ -18279,11 +20602,35 @@ In order to add collaborators, your project must either be a
 
 ## Available roles {#roles}
 
-<Roles />
+| Role                      | Abilities                                                                                            |
+| ------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Owner**                 | All Project abilities including deletion. At this time, project ownership is not transferable.       |
+| **Admin**                 | Same as a Project Owner, excluding deletion of the project.                                          |
+| **Read Only**             | Only explore and visualize the supergraph.                                                           |
+| **Subgraph Admin** \*     | All subgraph development-related abilities: create subgraph build, apply subgraph build to endpoint. |
+| **Subgraph Developer** \* | Same as a subgraph admin, excluding the ability to apply subgraph build to endpoint.                 |
+
+\* Subgraph roles are only available on [DDN Advanced projects](https://hasura.io/pricing/ddn).
 
 The following are the detailed permissions for the above roles:
 
-<Permissions />
+| Permissions                                                         | Owner | Admin | Read Only | Subgraph<br/> Admin \* | Subgraph<br/> Developer \* |
+| ------------------------------------------------------------------- | ----- | ----- | --------- | ---------------------- | -------------------------- |
+| View Supergraph Explorer                                            | ✅    | ✅    | ✅        | ✅                     | ✅                         |
+| Make GraphQL API requests                                           | ✅    | ✅    | ✅        | ✅                     | ✅                         |
+| View project insights                                               | ✅    | ✅    | ✅        | ✅                     | ✅                         |
+| Create supergraph builds<br/> - using all subgraphs' metadata       | ✅    | ✅    | ❌        | ❌                     | ❌                         |
+| Create supergraph builds<br/> - using single subgraph's metadata \* | ✅    | ✅    | ❌        | ✅                     | ✅                         |
+| Apply supergraph builds to project endpoint                         | ✅    | ✅    | ❌        | ❌                     | ❌                         |
+| Create subgraph builds \*                                           | ✅    | ✅    | ❌        | ✅                     | ✅                         |
+| Apply subgraph builds to project endpoint \*                        | ✅    | ✅    | ❌        | ✅                     | ❌                         |
+| Admin permissions on all subgraphs                                  | ✅    | ✅    | ❌        | ❌                     | ❌                         |
+| Create / Delete subgraphs                                           | ✅    | ✅    | ❌        | ❌                     | ❌                         |
+| Add / Remove collaborators                                          | ✅    | ✅    | ❌        | ❌                     | ❌                         |
+| Manage project plans and billing                                    | ✅    | ✅    | ❌        | ❌                     | ❌                         |
+| Delete project                                                      | ✅    | ❌    | ❌        | ❌                     | ❌                         |
+
+\* Only available on [DDN Advanced projects](https://hasura.io/pricing/ddn).
 
 ## How to invite collaborators {#invite-collaborators}
 
@@ -24911,7 +27258,31 @@ from the location where you run DDN CLI commands, consider using a [DDN Workspac
 
 :::
 
-<Prereqs />
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import CodeBlock from "@theme/CodeBlock";
+import Version from "@site/src/components/CliVersion";
+import Admonition from "@theme/Admonition";
+import InstallTheCli from "@site/docs/_install-the-cli.mdx";
+
+## Prerequisites
+
+**Install the DDN CLI**
+
+<InstallTheCli />
+
+**Install [Docker](https://docs.docker.com/engine/install/)**
+
+The Docker based workflow helps you iterate and develop locally without deploying any changes to Hasura DDN, making the
+development experience faster and your feedback loops shorter. **You'll need Docker Compose `v2.20` or later.**
+
+**Validate the installation**
+
+You can verify that the DDN CLI is installed correctly by running:
+
+```sh
+ddn doctor
+```
 
 ## Step 1. Authenticate your CLI
 
@@ -33288,7 +35659,33 @@ import InstallTheCli from "@site/docs/_install-the-cli.mdx";
 
 ## Install the CLI
 
-<InstallTheCli />
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import CodeBlock from "@theme/CodeBlock";
+import Version from "@site/src/components/CliVersion";
+import Admonition from "@theme/Admonition";
+
+<Tabs groupId="os-preference" className="api-tabs">
+
+<TabItem value="macOS-or-linux" label="macOS and Linux">
+
+Simply run the installer script in your terminal:
+
+<CodeBlock language="bash">
+  {`curl -L https://graphql-engine-cdn.hasura.io/ddn/cli/${props.revision || "v4"}/get.sh | bash`}
+</CodeBlock>
+
+</TabItem>
+
+<TabItem value="windows" label="Windows">
+- Download the latest <a href={`https://graphql-engine-cdn.hasura.io/ddn/cli/${props.revision || "v4"}/latest/DDN_CLI_Setup.exe`}>DDN CLI installer for Windows.</a> 
+- Run the `DDN_CLI_Setup.exe` installer file and follow the instructions. This will only take a minute.
+- By default, the DDN CLI is installed under `C:\Users\{Username}\AppData\Local\Programs\DDN_CLI`
+- The DDN CLI is added to your `%PATH%` environment variable so that you can use the `ddn` command from your terminal.
+<br />
+
+</TabItem>
+</Tabs>
 
 ## Verify the installation
 
