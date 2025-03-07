@@ -1,4 +1,5 @@
 import { walk } from "https://deno.land/std/fs/mod.ts";
+import { join, normalize } from "https://deno.land/std/path/mod.ts";
 
 async function combineMarkdownFiles(directory: string, outputFile: string) {
   const allContent: string[] = [];
@@ -30,8 +31,31 @@ async function combineMarkdownFiles(directory: string, outputFile: string) {
 
 // Learn more at https://docs.deno.com/runtime/manual/examples/module_metadata#concepts
 if (import.meta.main) {
-  const docsDir = "../ddn-docs/docs/";
-  const outputFile = "./allContent.txt";
+  // Get the path from command line arguments
+  const subPath = Deno.args[0];
+  const baseDocsDir = "../ddn-docs/docs";
+
+  // If no subpath provided, use the base docs directory
+  if (!subPath) {
+    const outputFile = "./allContent.txt";
+    try {
+      await combineMarkdownFiles(baseDocsDir, outputFile);
+    } catch (error) {
+      console.error("Error processing files:", error);
+      Deno.exit(1);
+    }
+    Deno.exit(0);
+  }
+
+  // Normalize the path by removing extra slashes and resolving . and ..
+  const normalizedPath = normalize(subPath).replace(/^\/+|\/+$/g, "");
+
+  // Construct the full docs directory path
+  const docsDir = join(baseDocsDir, normalizedPath);
+
+  // Create output filename based on the last part of the path
+  const outputName = normalizedPath.split("/").pop() || normalizedPath;
+  const outputFile = `./${outputName}.txt`;
 
   try {
     await combineMarkdownFiles(docsDir, outputFile);

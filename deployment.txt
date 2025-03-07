@@ -1,0 +1,2124 @@
+
+
+--- File: ../ddn-docs/docs/deployment/overview.mdx ---
+
+---
+sidebar_position: 0
+title: Basics
+description: "Learn the basics of deploying Hasura DDN projects"
+keywords:
+  - hasura ddn
+  - hasura enterprise
+  - hasura private ddn
+  - private ddn
+  - enterprise ddn
+  - byoc
+hide_table_of_contents: true
+seoFrontMatterUpdated: true
+---
+
+import { OverviewTopSectionIconNoVideo } from "@site/src/components/OverviewTopSectionIconNoVideo";
+import { OverviewPlainCard } from "@site/src/components/OverviewPlainCard";
+import Icon from "@site/static/icons/features/deployment.svg";
+
+# Deployment
+
+## Introduction
+
+Hasura DDN is a fully managed SaaS product where your API is running in a globally distributed cloud, and where
+performance, availability and security is already taken care of for you.
+
+## Find out more
+
+{/* TODO: Add links to the relevant pages */}
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/multi-repo-deployment.mdx ---
+
+---
+sidebar_position: 3
+title: Multi-Repository Deployment
+description: "Deploy multiple repositories together in a coordinated deployment"
+---
+
+import Roles from "@site/docs/collaboration/_roles.mdx";
+import Permissions from "@site/docs/collaboration/_permissions.mdx";
+
+# Multi-Repository Deployment
+
+For larger teams and larger projects, it can make sense to have multiple repositories contributing to the supergraph.
+
+In this setup, one or more subgraphs are defined in each repository and depending on the role of the user, can be built
+and applied to the supergraph independently.
+
+See the tables below for the roles and permissions of users on a Hasura DDN project.
+
+<Roles />
+
+Subgraph roles are only available on [DDN Advanced projects](https://hasura.io/pricing/ddn).
+
+The following are the detailed permissions for the above roles:
+
+<Permissions />
+
+Only available on [DDN Advanced projects](https://hasura.io/pricing/ddn).
+
+## Deployment Flow
+
+### Supergraph and all subgraphs
+
+{/* Info on Build... Apply... */}
+
+### Supergraph and a single subgraph
+
+{/* Info on Build... Apply... */}
+
+### A single subgraph
+
+{/* Info on Build... Apply... */}
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/index.mdx ---
+
+---
+sidebar_position: 0
+title: Overview
+description: "Learn about the different deployment options for Hasura DDN projects"
+keywords:
+  - hasura ddn
+  - deployment
+  - hosting
+  - self-hosted
+  - private ddn
+  - enterprise ddn
+---
+
+# Deployment Overview
+
+Hasura DDN offers flexible deployment options. From fully-managed cloud hosting on Hasura DDN to self-hosted solutions.
+
+## Deployment Options
+
+### Hasura DDN (Managed)
+
+The simplest way to deploy your API is using Hasura's fully-managed cloud platform. Your API runs in a globally
+distributed cloud where performance, availability, and security are handled for you. Key benefits include:
+
+- Zero infrastructure management
+- Global CDN and edge caching
+- Automatic scaling and high availability
+- Built-in monitoring and observability
+- Managed security and updates
+
+### Private DDN
+
+For enhanced security and control, Private DDN deployments allow you to run Hasura and your connectors either:
+
+- On dedicated infrastructure hosted by Hasura
+- On your own infrastructure (self-hosted/BYOC)
+
+Private DDN offers:
+
+- Enhanced security through private networking
+- Direct private connectivity to your data sources
+- Custom infrastructure requirements
+- Compliance with specific regulatory requirements
+
+### Self-Hosted
+
+You can also self-host Hasura DDN:
+
+- Deploy your own containers
+
+Choose the deployment option and workflow that best matches your requirements for security, cost, control, and ease of
+management.
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/deploying-your-project/tutorial/01-create-a-project.mdx ---
+
+---
+sidebar_position: 1
+sidebar_label: Create a project
+description: "Learn how to get started with Hasura DDN and your GraphQL API."
+keywords:
+  - hasura ddn
+  - graphql api
+  - quickstart
+  - getting started
+  - guide
+---
+
+import Thumbnail from "@site/src/components/Thumbnail";
+
+# Create a Project
+
+## What's about to happen?
+
+We're going to create a project on Hasura DDN.
+
+[**Projects**](/project-configuration/projects.mdx) contain all the configuration and metadata for your supergraph. A
+project will contain exactly one supergraph. When you create a project, you're creating a resource on Hasura DDN.
+Eventually, this can be used to serve your API.
+
+:::tip Required
+
+- [DDN CLI](/quickstart.mdx)
+- A new or existing [supergraph](/quickstart.mdx)
+
+:::
+
+<Thumbnail src="/img/get-started/ERD/create-project.png" alt="Create a DDN project" width="1000px" />
+
+## Steps
+
+### Step 1. Create a project
+
+Let's start by creating the project on Hasura DDN.
+
+```bash title="From any directory, run:"
+ddn project init
+```
+
+<details>
+  <summary>This command will return the project name and the console URL for your project:</summary>
+
+```bash title="Example output:"
+4:19PM INF Project "cool-cat-3685" created on Hasura DDN successfully
++-----------+---------------+
+| Project   | fast-pug-7230 |
++-----------+---------------+
+| Subgraphs | globals,app   |
++-----------+---------------+
+```
+
+</details>
+
+#### What did this do?
+
+The CLI did a lot under the hood:
+
+- It provisioned a new project for you on Hasura DDN and then returned the project name and console URL for your
+  project.
+- This command also set context so this local project is mapped to the newly-created Hasura DDN project.
+- It created subgraphs from your existing local project for the project on Hasura DDN.
+- The CLI created a new `.env.cloud` file for variables to be used in your hosted project.
+
+### Step 2. Update your environment variables
+
+The following variables configure how the engine connects to a connector and authenticate that connection. These
+variables are automatically updated by the CLI when creating a new connector build. They define the URLs for both
+reading and writing data, as well as the authentication details needed to communicate with the connector.
+
+| Variable                                | Description                                                                                                                              |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `APP_MY_CONNECTOR_AUTHORIZATION_HEADER` | Used for setting the authorization header to authenticate requests to the connector.                                                     |
+| `APP_MY_CONNECTOR_READ_URL`             | URL for reading data from the connector. Separation of read URLs allows DDN to route requests across multiple database replicas.         |
+| `APP_MY_CONNECTOR_WRITE_URL`            | URL for writing data to the connector. Write URLs are routed to replicas that support write operations, configured via `connector.yaml`. |
+
+Hasura DDN overrides the following values at runtime, so they can be left blank in the `.env.cloud` file and are
+consumed by the data connector:
+
+| Variable                                              | Description                                  |
+| ----------------------------------------------------- | -------------------------------------------- |
+| `APP_MY_CONNECTOR_HASURA_CONNECTOR_PORT`              | Configures the connector's HTTP server port. |
+| `APP_MY_CONNECTOR_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | Endpoint for exporting OpenTelemetry traces. |
+| `APP_MY_CONNECTOR_HASURA_SERVICE_TOKEN_SECRET`        | Secret for authenticating service requests.  |
+
+If your deployed data source is available at a different address than what was used locally, you'll need to update the
+connection strings in your `.env.cloud` file for each connector. This is especially important for variables like
+database connection URIs.
+
+For example, if your local environment uses a `MY_SUBGRAPH_MY_PG_CONNECTION_URI` variable, and your cloud database is
+hosted elsewhere, update the `.env.cloud` file with the correct connection string:
+
+```env title="Example of updating a connection string:"
+MY_SUBGRAPH_MY_PG_CONNECTION_URI="postgresql://read_only_user:readonlyuser@35.236.11.122:5432/v3-docs-sample-app"
+```
+
+This updated value should point to the data source you intend to use with your deployed API, ensuring it can connect
+properly in the cloud environment.
+
+:::info Tunneling a connection?
+
+If you want to test a build on Hasura DDN using a local database, you can use a tool like [ngrok](https://ngrok.com) to
+create a tunnel to your local machine. You can then update the connection URI to use this value in the `.env.cloud`
+file.
+
+:::
+
+### Step 3. Deploy your supergraph
+
+You're ready to deploy your supergraph! The following command will build and deploy your data connectors, update the
+connectors' URLs in your `.env.cloud` file, and — finally — create a new build of your supergraph and deploy it 🎉
+
+```bash title="Run:"
+ddn supergraph build create
+```
+
+## Next steps
+
+After you check out your newly-deployed supergraph, we recommend applying a build so it's served by your project. You
+can do that from the `GraphiQL` tab of the console, or using the CLI.
+
+```bash title="First, get the list of all builds:"
+ddn supergraph build get
+```
+
+After the CLI returns the list of builds, you can apply one using its build version:
+
+```bash title="Pass a build version to apply it:"
+ddn supergraph build apply <supergraph-build-version>
+```
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/deploying-your-project/tutorial/index.mdx ---
+
+---
+sidebar_position: 6
+sidebar_label: Tutorial
+description: "Learn how to deploy your project to Hasura DDN."
+keywords:
+  - hasura ddn
+  - tutorial
+  - deploy
+  - deployment
+  - hosting
+---
+
+# Deploying your project to Hasura DDN
+
+To deploy your API, you need to collectively deploy your connectors and supergraph. Hasura DDN can host these for you,
+enabling easy management via the Hasura Console on Hasura DDN. We'll follow these steps over the next several pages:
+
+1. Create a project on Hasura DDN.
+2. Deploy each connector you've used to connect data (e.g., PostgreSQL, MongoDB, TypeScript).
+3. Deploy your supergraph.
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/deploying-your-project/tutorial/03-deploy-a-connector.mdx ---
+
+---
+sidebar_position: 3
+sidebar_label: Deploy a connector
+description: "Learn how to get started with Hasura DDN and your GraphQL API."
+keywords:
+  - hasura ddn
+  - graphql api
+  - quickstart
+  - getting started
+  - guide
+---
+
+import Thumbnail from "@site/src/components/Thumbnail";
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# Deploy a Connector
+
+## What's about to happen?
+
+Hasura DDN will host your deployed connectors for you, ensuring rapid delivery of data from your API to your consumers.
+
+<Tabs groupId="deploy-connector" className="api-tabs">
+  <TabItem value="PostgreSQL" label="PostgreSQL">
+
+postgres
+
+  </TabItem>
+  <TabItem value="MongoDB" label="MongoDB">
+
+mongodb
+
+  </TabItem>
+  <TabItem value="ClickHouse" label="ClickHouse">
+
+clickhouse
+
+  </TabItem>
+  <TabItem value="TypeScript" label="TypeScript">
+
+typescript
+
+  </TabItem>
+  <TabItem value="Python" label="Python">
+
+python
+
+  </TabItem>
+
+<TabItem value="Go" label="Go">
+
+go
+
+  </TabItem>
+  <TabItem value="OpenAPI" label="OpenAPI">
+
+openapi
+
+  </TabItem>
+  <TabItem value="GraphQL" label="GraphQL">
+
+graphql
+
+  </TabItem>
+  <TabItem value="Other" label="Other">
+
+other
+
+  </TabItem>
+</Tabs>
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/deploying-your-project/tutorial/04-deploy-your-supergraph.mdx ---
+
+---
+sidebar_position: 4
+sidebar_label: Deploy your supergraph
+description: "Learn how to get started with Hasura DDN and your GraphQL API."
+keywords:
+  - hasura ddn
+  - graphql api
+  - quickstart
+  - getting started
+  - guide
+---
+
+import Thumbnail from "@site/src/components/Thumbnail";
+
+# Deploy your Supergraph
+
+## What's about to happen?
+
+You're about to deploy your supergraph to Hasura DDN, our globally-distributed, highly-available, lightning-fast hosted
+service!
+
+<Thumbnail src="/img/get-started/ERD/deploy-supergraph.png" alt="Deploy your supergraph to Hasura DDN" width="1000px" />
+
+## Steps
+
+:::tip Required
+
+- [DDN CLI](/quickstart.mdx)
+- A new or existing [supergraph](/quickstart.mdx)
+- A new or existing [subgraph](/quickstart.mdx)
+- A new or existing [data connector](/quickstart.mdx)
+- A new or existing [project](/deployment/hasura-ddn/deploying-your-project/tutorial/01-create-a-project.mdx)
+
+:::
+
+### Step 1. Build and deploy your supergraph
+
+```bash title="Run:"
+ddn supergraph build create
+```
+
+:::info Project set in context
+
+Remember that because we set the project context, we don't need to pass the project name as a flag in the command.
+
+:::
+
+### Step 2. Explore your supergraph in the Hasura Console
+
+The CLI will respond with a build version and build **Console URL**. _Click on it!_
+
+You can go ahead and explore the API for this build in the Hasura Console!
+
+### Step 3. Apply your supergraph as your project's endpoint.
+
+An _applied build_ is the default one that is served by your Hasura DDN project endpoint.
+
+```bash title="To apply a build, run:"
+ddn supergraph build apply <supergraph-build-version>
+```
+
+:::info Your API is still private
+
+By default, all Hasura DDN projects are in `Private` API Access Mode and accessible only to project collaborators. In
+your console on DDN you will see a JWT token set in the `x-hasura-ddn-token` header which you can use to access your API
+from both the console and any client app. This token will expire after 1 hour and you can regenerate it by refreshing
+the console.
+
+You can navigate to the project's settings and switch the API Access Mode setting to `Public` to make your API
+accessible to anyone.
+
+**Note: Your API will be now be accessible from any source and you should protect it using either the
+[JWT](/auth/authentication/jwt/index.mdx) or [webhook](/auth/authentication/webhook/index.mdx) auth configuration.**
+
+:::
+
+## What did this do?
+
+When you ran the command above, the CLI used the configuration you provided to create an immutable build of your
+supergraph on Hasura DDN. This build is now accessible via the build's GraphQL endpoint and in the Hasura Console for
+exploration.
+
+Teammates can explore the API, interact with it, and provide feedback before you iterate and create a new build for
+testing. Or, if you're ready, you can apply the build so that it's served by the project's endpoint. And, should you
+realize you applied it a _little_ early, you can easily roll it back by applying an older build.
+
+## Next steps
+
+At this point, you have all the ingredients and knowledge to create a robust supergraph that composes data across
+various sources and aggregates them into a single, reliable, performant API. Before moving to production, consider the
+resources below:
+
+### Migrations
+
+Hasura recommends a number of third-party solutions for managing database migrations. Commonly, users implement
+migrations via CI/CD with [Flyway](https://flywaydb.org/) or similar resources.
+
+:::info Doesn't Hasura manage migrations?
+
+In v2, Hasura provided a built-in migration tool. However, as v3 metadata is decoupled from the underlying data source,
+you are free to manage your migrations however you wish.
+
+:::
+
+### Performance optimizations
+
+Hasura provides a suite of observability tools directly in a project's DDN console. You can view traces, query plans,
+and general usage statistics. These are helpful for diagnosing common bottlenecks and problems with your application's
+performance. You can read more about these [here](/observability/overview.mdx).
+
+### CI/CD
+
+You can create a pipeline for deployments using any tools you wish. As we recommend initializing a git repository early
+in the project creation process, and provide operability with environment variables, you can follow any git-workflow
+best practices for moving between development, staging, and production environments. Additionally, we provide a
+configurable [GitHub Action](https://github.com/marketplace/actions/ddn-deployment) for automatically managing your
+deployments.
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/deploying-your-project/tutorial/02-create-a-subgraph.mdx ---
+
+---
+sidebar_position: 2
+sidebar_label: Create a subgraph
+description: "Learn how to get started with Hasura DDN and your GraphQL API."
+keywords:
+  - hasura ddn
+  - graphql api
+  - quickstart
+  - getting started
+  - guide
+---
+
+import Thumbnail from "@site/src/components/Thumbnail";
+
+# Create a Subgraph
+
+## What's about to happen?
+
+You're about to create a subgraph on Hasura DDN.
+
+Subgraphs can be rebuilt at any point to reflect changes made in connectors or other metadata related to models,
+commands, relationships, or permissions.
+
+:::tip Required
+
+- [DDN CLI](/quickstart.mdx)
+- A new or existing [project](/deployment/hasura-ddn/deploying-your-project/tutorial/01-create-a-project.mdx)
+
+:::
+
+For each subgraph you're deploying, run the following to create it on Hasura DDN, replacing `my_subgraph` with your
+desired name. The name should match the subgraph name from your `supergraph.yaml` file in your local metadata.
+
+<Thumbnail src="/img/get-started/ERD/create-subgraph2.png" alt="Create a subgraph on Hasura DDN" width="1000px" />
+
+## Steps
+
+### Step 1. Create a subgraph
+
+```bash title="From any project directory, run:"
+ddn project subgraph create my_subgraph
+```
+
+## What did this do?
+
+Seemingly, this was an unimpressive step. However, subgraphs in your local metadata will map to resources on Hasura DDN.
+Thus, for each subgraph you have in local metadata, you'll create the companion on Hasura DDN.
+
+## Next steps
+
+With a subgraph provisioned on Hasura DDN, you can now begin
+[building and deploying your connectors](/deployment/hasura-ddn/deploying-your-project/tutorial/deploy-a-connector) that
+service this subgraph.
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/deploying-your-project/tutorial/partials/clickHouse/_deployment-how-to.mdx ---
+
+import Thumbnail from "@site/src/components/Thumbnail";
+
+## What's about to happen?
+
+Connectors are deployed independently of your supergraph and of each other. Hasura DDN will host your connectors for
+you, ensuring rapid delivery of data from your API to your consumers. **For each ClickHouse connector in a project,
+follow the steps below.**
+
+<Thumbnail src="/img/get-started/ERD/deploy-connector.png" alt="Deploy a connector to Hasura DDN" width="1000px" />
+
+## Steps
+
+:::tip Required
+
+- [DDN CLI](/quickstart.mdx)
+- A new or existing [supergraph](/quickstart.mdx)
+- A new or existing [subgraph](/quickstart.mdx)
+- A new or existing [data connector](/quickstart.mdx)
+- A new or existing [project](/deployment/hasura-ddn/deploying-your-project/tutorial/01-create-a-project.mdx)
+- A new or existing
+  [subgraph on Hasura DDN](/deployment/hasura-ddn/deploying-your-project/tutorial/02-create-a-subgraph.mdx)
+
+:::
+
+### Step 1. Update the .env.cloud for the connector
+
+We need to update the `env.cloud` file with any connection URI we need for the cloud hosted connector to be able to
+communicate with the ClickHouse data source.
+
+For example, you may have used a development database while iterating locally. You can now replace that value with your
+staging or production database, depending on your needs.
+
+If you've been running a local ClickHouse instance, you can replace the connection string with a cloud instance
+connection string or set up an [ngrok](https://ngrok.com/) tunnel to a local instance.
+
+```env title="For example, my_subgraph/my_clickhouse/.env.cloud"
+CLICKHOUSE_URL=<clickhouse-connection-uri>
+CLICKHOUSE_USERNAME=<your-username>
+CLICKHOUSE_PASSWORD=<your-passowrd>
+```
+
+This key will depend on your connector.
+
+### Step 2. Build and deploy your cloud connector
+
+At this stage, you can now build and deploy your connector on Hasura DDN. Simply run the following replacing the
+directory names with those that reflect your project.
+
+```bash title="Taking care to update the path to your connector's configuration file, run:"
+ddn connector build create --connector ./my_subgraph/connector/my_clickhouse/connector.yaml
+```
+
+The CLI will respond with read and write URLs for your deployed connector.
+
+In this command we're passing a few arguments:
+
+- `--connector` specifies the path to the connector's cloud configuration file which we want to build.
+- `--target-env-file` specifies the path to the subgraph's cloud environment file to which the read and write URLs for
+  the newly built cloud connector will be written to.
+- `--target-subgraph` specifies the path to the subgraph's configuration yaml file to which the target env file belongs.
+- `--target-connector-link` where the latest schema for the connector will be updated.
+
+You're now ready to build and deploy your supergraph!
+
+## What did this do?
+
+The steps above built and deployed your ClickHouse connector to Hasura DDN. So long as the connection URI you provided
+is reachable by DDN, your connector will be able to communicate between your API and your data source.
+
+## Next steps
+
+If you have other connectors needed for a supergraph, repeat these steps for each connector. Otherwise, you're ready to
+[create a new build of your supergraph](/deployment/hasura-ddn/deploying-your-project/tutorial/04-deploy-your-supergraph.mdx)
+and deploy it to Hasura DDN!
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/deploying-your-project/tutorial/partials/postgreSQL/_deployment-how-to.mdx ---
+
+import Thumbnail from "@site/src/components/Thumbnail";
+
+For each PostgreSQL connector in a project, follow the steps below.
+
+<Thumbnail src="/img/get-started/ERD/deploy-connector.png" alt="Deploy a connector to Hasura DDN" width="1000px" />
+
+## Steps
+
+:::tip Required
+
+- [DDN CLI](/quickstart.mdx)
+- A new or existing [supergraph](/quickstart.mdx)
+- A new or existing [subgraph](/quickstart.mdx)
+- A new or existing [data connector](/quickstart.mdx)
+- A new or existing [project](/deployment/hasura-ddn/deploying-your-project/tutorial/01-create-a-project.mdx)
+- A new or existing
+  [subgraph on Hasura DDN](/deployment/hasura-ddn/deploying-your-project/tutorial/02-create-a-subgraph.mdx)
+
+:::
+
+### Step 1. Update the root `.env.cloud`
+
+We need to update the root `env.cloud` file with the connection URI we need for the cloud hosted connector to be able to
+communicate with the PostgreSQL data source.
+
+For example, you may have used a development database while iterating locally. You can now replace that value with your
+staging or production database, depending on your needs.
+
+If you've been running a local PostgreSQL instance, you can replace the connection string with a cloud instance
+connection string or set up an [ngrok](https://ngrok.com/) tunnel to a local instance.
+
+```env title="For example, ./.env.cloud"
+CONNECTION_URI=<postgres-connection-uri>
+```
+
+### Step 2. Build and deploy your cloud connector
+
+At this stage, you can now build and deploy your connector on Hasura DDN. Simply run the following replacing the
+directory names with those that reflect your project.
+
+```bash title="Taking care to update the path to your connector's configuration file, run:"
+ddn connector build create --connector ./my_subgraph/connector/my_pg/connector.yaml
+```
+
+The CLI will respond with read and write URLs for your deployed connector.
+
+In this command we're passing the `--connector` argument, which specifies the path to the connector's configuration file
+which we want to build.
+
+## What did this do?
+
+The steps above built and deployed your PostgreSQL connector to Hasura DDN. So long as the connection URI you provided
+is reachable by DDN, your connector will be able to communicate between your API and your data source.
+
+## Next steps
+
+If you have other connectors needed for a supergraph, repeat these steps for each connector. Otherwise, you're ready to
+[create a new build of your supergraph](/deployment/hasura-ddn/deploying-your-project/tutorial/04-deploy-your-supergraph.mdx)
+and deploy it to Hasura DDN!
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/deploying-your-project/tutorial/partials/go/_deployment-how-to.mdx ---
+
+import Thumbnail from "@site/src/components/Thumbnail";
+
+## What's about to happen?
+
+Connectors are deployed independently of your supergraph and of each other. Hasura DDN will host your connectors for
+you, ensuring rapid delivery of data from your API to your consumers. **For each Go connector in a project, follow the
+steps below.**
+
+<Thumbnail src="/img/get-started/ERD/deploy-connector.png" alt="Deploy a connector to Hasura DDN" width="1000px" />
+
+## Steps
+
+:::tip Required
+
+- [DDN CLI](/quickstart.mdx)
+- A new or existing [supergraph](/quickstart.mdx)
+- A new or existing [subgraph](/quickstart.mdx)
+- A new or existing [data connector](/quickstart.mdx)
+- A new or existing [project](/deployment/hasura-ddn/deploying-your-project/tutorial/01-create-a-project.mdx)
+- A new or existing
+  [subgraph on Hasura DDN](/deployment/hasura-ddn/deploying-your-project/tutorial/02-create-a-subgraph.mdx)
+
+:::
+
+### Step 1. Build and deploy your cloud connector
+
+You can now build and deploy your connector on Hasura DDN. Simply run the following replacing the directory names with
+those that reflect your project if necessary.
+
+```bash title="Taking care to update the path to your connector's configuration file, run:"
+ddn connector build create --connector ./my_subgraph/connector/my_go/connector.yaml
+```
+
+The CLI will respond with read and write URLs for your deployed connector.
+
+In this command we're passing a few arguments:
+
+- `--connector` specifies the path to the connector's cloud configuration file which we want to build.
+- `--target-env-file` specifies the path to the subgraph's cloud environment file to which the read and write URLs for
+  the newly built cloud connector will be written to.
+- `--target-subgraph` specifies the path to the subgraph's configuration yaml file to which the target env file belongs.
+- `--target-connector-link` where the latest schema for the connector will be updated.
+
+You're now ready to build and deploy your supergraph!
+
+## What did this do?
+
+The steps above built and deployed your Go connector to Hasura DDN. This means you can now use this connector to enrich
+or transform data on your DDN-hosted supergraph 🎉
+
+## Next steps
+
+If you have other connectors needed for a supergraph, repeat these steps for each connector. Otherwise, you're ready to
+[create a new build of your supergraph](/deployment/hasura-ddn/deploying-your-project/tutorial/04-deploy-your-supergraph.mdx)
+and deploy it to Hasura DDN!
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/deploying-your-project/tutorial/partials/python/_deployment-how-to.mdx ---
+
+import Thumbnail from "@site/src/components/Thumbnail";
+
+## What's about to happen?
+
+Connectors are deployed independently of your supergraph and of each other. Hasura DDN will host your connectors for
+you, ensuring rapid delivery of data from your API to your consumers. **For each Python connector in a project, follow
+the steps below.**
+
+<Thumbnail src="/img/get-started/ERD/deploy-connector.png" alt="Deploy a connector to Hasura DDN" width="1000px" />
+
+## Steps
+
+:::tip Required
+
+- [DDN CLI](/quickstart.mdx)
+- A new or existing [supergraph](/quickstart.mdx)
+- A new or existing [subgraph](/quickstart.mdx)
+- A new or existing [data connector](/quickstart.mdx)
+- A new or existing [project](/deployment/hasura-ddn/deploying-your-project/tutorial/01-create-a-project.mdx)
+- A new or existing
+  [subgraph on Hasura DDN](/deployment/hasura-ddn/deploying-your-project/tutorial/02-create-a-subgraph.mdx)
+
+:::
+
+### Step 1. Build and deploy your cloud connector
+
+You can now build and deploy your connector on Hasura DDN. Simply run the following replacing the directory names with
+those that reflect your project if necessary.
+
+```bash title="Taking care to update the path to your connector's configuration file, run:"
+ddn connector build create --connector ./my_subgraph/connector/my_python/connector.yaml
+```
+
+The CLI will respond with read and write URLs for your deployed connector.
+
+In this command we're passing a few arguments:
+
+- `--connector` specifies the path to the connector's cloud configuration file which we want to build.
+- `--target-env-file` specifies the path to the subgraph's cloud environment file to which the read and write URLs for
+  the newly built cloud connector will be written to.
+- `--target-subgraph` specifies the path to the subgraph's configuration yaml file to which the target env file belongs.
+- `--target-connector-link` where the latest schema for the connector will be updated.
+
+You're now ready to build and deploy your supergraph!
+
+## What did this do?
+
+The steps above built and deployed your Python connector to Hasura DDN. This means you can now use this connector to
+enrich or transform data on your DDN-hosted supergraph 🎉
+
+## Next steps
+
+If you have other connectors needed for a supergraph, repeat these steps for each connector. Otherwise, you're ready to
+[create a new build of your supergraph](/deployment/hasura-ddn/deploying-your-project/tutorial/04-deploy-your-supergraph.mdx)
+and deploy it to Hasura DDN!
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/deploying-your-project/tutorial/partials/typeScript/_deployment-how-to.mdx ---
+
+import Thumbnail from "@site/src/components/Thumbnail";
+
+## What's about to happen?
+
+Connectors are deployed independently of your supergraph and of each other. Hasura DDN will host your connectors for
+you, ensuring rapid delivery of data from your API to your consumers. **For each TypeScript connector in a project,
+follow the steps below.**
+
+<Thumbnail src="/img/get-started/ERD/deploy-connector.png" alt="Deploy a connector to Hasura DDN" width="1000px" />
+
+## Steps
+
+:::tip Required
+
+- [DDN CLI](/quickstart.mdx)
+- A new or existing [supergraph](/quickstart.mdx)
+- A new or existing [subgraph](/quickstart.mdx)
+- A new or existing [data connector](/quickstart.mdx)
+- A new or existing [project](/deployment/hasura-ddn/deploying-your-project/tutorial/01-create-a-project.mdx)
+- A new or existing
+  [subgraph on Hasura DDN](/deployment/hasura-ddn/deploying-your-project/tutorial/02-create-a-subgraph.mdx)
+
+:::
+
+### Step 1. Build and deploy your cloud connector
+
+You can now build and deploy your connector on Hasura DDN. Simply run the following replacing the directory names with
+those that reflect your project if necessary.
+
+```bash title="Taking care to update the path to your connector's configuration file, run:"
+ddn connector build create --connector ./my_subgraph/connector/my_ts/connector.yaml
+```
+
+The CLI will respond with read and write URLs for your deployed connector.
+
+In this command we're passing a few arguments:
+
+- `--connector` specifies the path to the connector's cloud configuration file which we want to build.
+- `--target-env-file` specifies the path to the subgraph's cloud environment file to which the read and write URLs for
+  the newly built cloud connector will be written to.
+- `--target-subgraph` specifies the path to the subgraph's configuration yaml file to which the target env file belongs.
+- `--target-connector-link` where the latest schema for the connector will be updated.
+
+You're now ready to build and deploy your supergraph!
+
+## What did this do?
+
+The steps above built and deployed your TypeScript connector to Hasura DDN. This means you can now use this connector to
+enrich or transform data on your DDN-hotsed supergraph 🎉
+
+## Next steps
+
+If you have other connectors needed for a supergraph, repeat these steps for each connector. Otherwise, you're ready to
+[create a new build of your supergraph](/deployment/hasura-ddn/deploying-your-project/tutorial/04-deploy-your-supergraph.mdx)
+and deploy it to Hasura DDN!
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/deploying-your-project/tutorial/partials/openAPI/_deployment-how-to.mdx ---
+
+import Thumbnail from "@site/src/components/Thumbnail";
+
+## What's about to happen?
+
+Connectors are deployed independently of your supergraph and of each other. Hasura DDN will host your connectors for
+you, ensuring rapid delivery of data from your API to your consumers. **For each OpenAPI connector in a project, follow
+the steps below.**
+
+<Thumbnail src="/img/get-started/ERD/deploy-connector.png" alt="Deploy a connector to Hasura DDN" width="1000px" />
+
+## Steps
+
+:::tip Required
+
+- [DDN CLI](/quickstart.mdx)
+- A new or existing [supergraph](/quickstart.mdx)
+- A new or existing [subgraph](/quickstart.mdx)
+- A new or existing [data connector](/quickstart.mdx)
+- A new or existing [project](/deployment/hasura-ddn/deploying-your-project/tutorial/01-create-a-project.mdx)
+- A new or existing
+  [subgraph on Hasura DDN](/deployment/hasura-ddn/deploying-your-project/tutorial/02-create-a-subgraph.mdx)
+
+:::
+
+### Step 1. Update the .env.cloud for the connector
+
+### Specifying the OpenAPI base URL
+
+We need our cloud hosted connector to be able to communicate with the OpenAPI API. If we added this URI via an
+environment variable in the `env.local` file, we need to update the `env.cloud` file with the connection URI for the
+cloud hosted connector. Eg:
+
+```env title="For example, my_subgraph/my_openapi/.env.cloud"
+NDC_OAS_BASE_URL=<your-openapi-base-url>
+```
+
+Eg: `NDC_OAS_BASE_URL=https://petstore3.swagger.io/api/v3` However, if you've edited this directly in your
+`functions.ts` file, you can skip this step.
+
+You may have used a development API server while iterating locally. You can now replace that value with your staging or
+production API server, depending on your needs.
+
+### Step 1. Build and deploy your cloud connector
+
+You can now build and deploy your connector to Hasura DDN. Simply run the following, replacing the directory names with
+those that reflect your project.
+
+```bash title="Taking care to update the path to your connector's configuration file, run:"
+ddn connector build create --connector ./my_subgraph/connector/my_openapi/connector.yaml
+```
+
+The CLI will respond with read and write URLs for your deployed connector.
+
+### Step 3. Create a .env.cloud for the subgraph
+
+If you haven't already deployed a connector for this subgraph, you'll need to create a `.env.cloud.my_subgraph` file in
+the root directory of the subgraph which contains your connector. Within this, you'll add the cloud connector's URLs
+which were returned from the command above. Your file should look like this example with a connector named `my_openapi`
+in the `my_subgraph` subgraph.
+
+```env title="For example, my_subgraph/.env.cloud.my_subgraph:"
+MY_SUBGRAPH_MY_OPENAPI_READ_URL=<cloud-connector-read-url>
+MY_SUBGRAPH_MY_OPENAPI_WRITE_URL=<cloud-connector-write-url>
+```
+
+At this stage, you're ready to now build and deploy your supergraph!
+
+## What did this do?
+
+The steps above built and deployed your data connector to Hasura DDN. So long as the connection URI you provided is
+reachable by DDN, your connector will be able to communicate between your API and your data source.
+
+## Next steps
+
+If you have other connectors needed for a supergraph, repeat these steps for each connector. Otherwise, you're ready to
+[create a new build of your supergraph](/deployment/hasura-ddn/deploying-your-project/tutorial/04-deploy-your-supergraph.mdx)
+and deploy it to Hasura DDN!
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/deploying-your-project/tutorial/partials/mongoDB/_deployment-how-to.mdx ---
+
+import Thumbnail from "@site/src/components/Thumbnail";
+
+## What's about to happen?
+
+Connectors are deployed independently of your supergraph and of each other. Hasura DDN will host your connectors for
+you, ensuring rapid delivery of data from your API to your consumers. **For each MongoDB connector in a project, follow
+the steps below.**
+
+<Thumbnail src="/img/get-started/ERD/deploy-connector.png" alt="Deploy a connector to Hasura DDN" width="1000px" />
+
+## Steps
+
+:::tip Required
+
+- [DDN CLI](/quickstart.mdx)
+- A new or existing [supergraph](/quickstart.mdx)
+- A new or existing [subgraph](/quickstart.mdx)
+- A new or existing [data connector](/quickstart.mdx)
+- A new or existing [project](/deployment/hasura-ddn/deploying-your-project/tutorial/01-create-a-project.mdx)
+- A new or existing
+  [subgraph on Hasura DDN](/deployment/hasura-ddn/deploying-your-project/tutorial/02-create-a-subgraph.mdx)
+
+:::
+
+### Step 1. Update the .env.cloud for the connector
+
+We need to update the `env.cloud` file with any connection URI we need for the cloud hosted connector to be able to
+communicate with the MongoDB data source.
+
+For example, you may have used a development database while iterating locally. You can now replace that value with your
+staging or production database, depending on your needs.
+
+If you've been running a local MongoDB instance, you can replace the connection string with a
+[MongoDB Atlas](https://www.mongodb.com/products/platform/atlas-database) connection string or set up an
+[ngrok](https://ngrok.com/) tunnel to a local MongoDB instance.
+
+```env title="For example, my_subgraph/my_mongo/.env.cloud"
+MONGODB_DATABASE_URI="mongodb+srv://<your-mongodb-connection-string>"
+```
+
+This key will depend on your connector.
+
+### Step 2. Build and deploy your cloud connector
+
+At this stage, you can now build and deploy your connector Hasura DDN. Simply run the following replacing the directory
+names with those that reflect your project.
+
+```bash title="Taking care to update the path to your connector's configuration file, run:"
+ddn connector build create --connector ./my_subgraph/connector/my_mongo/connector.yaml
+```
+
+The CLI will respond with read and write URLs for your deployed connector.
+
+In this command we're passing a few arguments:
+
+- `--connector` specifies the path to the connector's cloud configuration file which we want to build.
+- `--target-env-file` specifies the path to the subgraph's cloud environment file to which the read and write URLs for
+  the newly built cloud connector will be written to.
+- `--target-subgraph` specifies the path to the subgraph's configuration yaml file to which the target env file belongs.
+- `--target-connector-link` where the latest schema for the connector will be updated.
+
+You're now ready to build and deploy your supergraph!
+
+## What did this do?
+
+The steps above built and deployed your data connector to Hasura DDN. So long as the connection URI you provided is
+reachable by DDN, your connector will be able to communicate between your API and your data source.
+
+## Next steps
+
+If you have other connectors needed for a supergraph, repeat these steps for each connector. Otherwise, you're ready to
+[create a new build of your supergraph](/deployment/hasura-ddn/deploying-your-project/tutorial/04-deploy-your-supergraph.mdx)
+and deploy it to Hasura DDN!
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/deploying-your-project/tutorial/partials/graphql/_deployment-how-to.mdx ---
+
+import Thumbnail from "@site/src/components/Thumbnail";
+
+## What's about to happen?
+
+Connectors are deployed independently of your supergraph and of each other. Hasura DDN will host your connectors for
+you, ensuring rapid delivery of data from your API to your consumers. **For each GraphQL connector in a project, follow
+the steps below.**
+
+<Thumbnail src="/img/get-started/ERD/deploy-connector.png" alt="Deploy a connector to Hasura DDN" width="1000px" />
+
+## Steps
+
+:::tip Required
+
+- [DDN CLI](/quickstart.mdx)
+- A new or existing [supergraph](/quickstart.mdx)
+- A new or existing [subgraph](/quickstart.mdx)
+- A new or existing [data connector](/quickstart.mdx)
+- A new or existing [project](/deployment/hasura-ddn/deploying-your-project/tutorial/01-create-a-project.mdx)
+- A new or existing
+  [subgraph on Hasura DDN](/deployment/hasura-ddn/deploying-your-project/tutorial/02-create-a-subgraph.mdx)
+
+:::
+
+### Step 1. Build and deploy your cloud connector
+
+Simply run the following replacing the directory names with those that reflect your project.
+
+```bash title="Taking care to update the path to your connector's configuration file, run:"
+ddn connector build create --connector ./my_subgraph/connector/my_graphql/connector.yaml
+```
+
+The CLI will respond with read and write URLs for your deployed connector.
+
+In this command we're passing a few arguments:
+
+- `--connector` specifies the path to the connector's cloud configuration file which we want to build.
+- `--target-env-file` specifies the path to the subgraph's cloud environment file to which the read and write URLs for
+  the newly built cloud connector will be written to.
+- `--target-subgraph` specifies the path to the subgraph's configuration yaml file to which the target env file belongs.
+- `--target-connector-link` where the latest schema for the connector will be updated.
+
+You're now ready to build and deploy your supergraph!
+
+## What did this do?
+
+The steps above built and deployed your GraphQL connector to Hasura DDN.
+
+## Next steps
+
+If you have other connectors needed for a supergraph, repeat these steps for each connector. Otherwise, you're ready to
+[create a new build of your supergraph](/deployment/hasura-ddn/deploying-your-project/tutorial/04-deploy-your-supergraph.mdx)
+and deploy it to Hasura DDN!
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/deploying-your-project/incremental-builds.mdx ---
+
+---
+sidebar_position: 2
+sidebar_label: Deploying incrementally
+description: "Learn how to deploy your project incrementally to Hasura DDN."
+keywords:
+  - hasura ddn
+  - graphql api
+  - quickstart
+  - getting started
+  - guide
+---
+
+# Deploying Incrementally
+
+You have fine-grained control over the compositions of which versions of connectors, subgraphs, and eventual supergraph
+are deployed to Hasura DDN.
+
+You can build and deploy these incrementally, or all at once as we've shown in the
+[Deploy to DDN](/deployment/hasura-ddn/deploying-your-project/deploy-to-ddn.mdx) guide.
+
+## Building and deploying specific connectors
+
+### Step 1: Create a new build of the connector on Hasura DDN.
+
+To build the connector and have it running on the Hasura DDN infrastructure you can run the following command:
+
+```bash
+ddn connector build create --connector <path-to-connector.yaml>
+```
+
+The output will include the ConnectorBuild Id, the ConnectorBuild Read URL, the ConnectorBuild Write URL, and the
+Authorization Header used to communicate with the connector.
+
+### Step 2: Update the env values
+
+Update the env values for the connector URLS and Authorization Header in the corresponding .env.cloud file:
+
+```env
+APP_MY_CONNECTOR_CONNECTION_URI="<existing-connection-uri>"
+APP_MY_CONNECTOR_AUTHORIZATION_HEADER="<new-authorization-header>"
+APP_MY_CONNECTOR_READ_URL="<new-read-url>"
+APP_MY_CONNECTOR_WRITE_URL="<new-write-url>"
+```
+
+### Step 3: Build the supergraph without building connectors
+
+```bash
+ddn supergraph build create --no-build-connectors
+```
+
+The build version will be output after the build is complete.
+
+Note that you can also build subgraphs individually without building connectors, see the section on
+[building and deploying a specific subgraph build](#build-deploy-subgraph) below.
+
+### Step 4: Deploy the supergraph
+
+```bash
+ddn supergraph build apply <build-version>
+```
+
+This will apply the build to the supergraph to become the active API.
+
+## Building and deploying a specific subgraph build {#build-deploy-subgraph}
+
+You can build subgraphs independently too.
+
+### Step 1: Build
+
+```bash
+ddn subgraph build create
+```
+
+This will create a build of the subgraph and any connectors that are associated with it and output the build version.
+
+As always, this will use the current subgraph set in the `context.yaml` file. You can override this with the
+`--subgraph` flag or change subgraph context with `ddn context set subgraph <path-to-subgraph.yaml>`.
+
+:::info Hasura DDN only
+
+There is no local subgraph-only build command.
+
+:::
+
+### Step 2 Option 1: Build the supergraph with the new subgraph build
+
+You can create a build of the rest of the supergraph (with the currently applied build version or a specific one) but
+direct Hasura DDN to use the new specific subgraph build.
+
+```bash
+ddn supergraph build create --subgraph-version <subgraph-name>:<subgraph-build-version> --base-supergraph-on-applied
+```
+
+This will output the build version and you can now use it for testing or apply the supergraph build to be the active
+API. To specify a specific supergraph build version, you can use the `--base-supergraph-version` flag with the
+supergraph build version you want to use.
+
+```bash
+ddn supergraph build apply <build-version>
+```
+
+You can compose any combination of subgraph builds this way to create your supergraph builds.
+
+### Step 2 Option 2: Apply the subgraph build to the active API
+
+You can also apply the subgraph build directly to the active API.
+
+```bash
+ddn subgraph build apply <build-version>
+```
+
+## Summary
+
+You have full control over the composition of your supergraph and can build and deploy subgraphs and connectors
+incrementally and independently to compose your supergraph.
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/deploying-your-project/index.mdx ---
+
+---
+sidebar_position: 1
+sidebar_label: Deploying your project
+description: "Learn how to deploy your project to Hasura DDN."
+keywords:
+  - hasura ddn
+  - graphql api
+  - quickstart
+  - getting started
+  - guide
+---
+
+# Deploying your project to Hasura DDN
+
+To deploy your API and make it accessible to the world via Hasura DDN, you will create builds of your connectors,
+subgraphs, and the supergraph. This can all be done in a single command.
+
+You will then apply the supergraph build to your project, making it the "official" API for the project.
+
+## Next steps
+
+Use the How To guide for the most common steps to deploy your project to DDN. Try the tutorial for more detailed steps
+depending on your specific connector.
+
+- [How to deploy your project to DDN](/deployment/hasura-ddn/deploying-your-project/deploy-to-ddn.mdx)
+- [Deploy specific connectors and subgraphs to DDN](/deployment/hasura-ddn/deploying-your-project/incremental-builds.mdx)
+- [Deploy to DDN tutorial](/deployment/hasura-ddn/deploying-your-project/tutorial/index.mdx)
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/deploying-your-project/deploy-to-ddn.mdx ---
+
+---
+sidebar_position: 2
+sidebar_label: Deploy to DDN
+description: "Learn how to deploy your project to Hasura DDN."
+keywords:
+  - hasura ddn
+  - deploy
+  - deployment
+  - hosting
+---
+
+# Deploying your project to Hasura DDN
+
+Deploying your project to Hasura DDN is a simple process and can be done in 3 steps.
+
+## Deployment flow
+
+1. Initialize a project on Hasura DDN.
+2. Create a supergraph build on Hasura DDN.
+3. Apply the supergraph build to your project on Hasura DDN.
+
+### Step 1: Create a project on Hasura DDN
+
+```bash title="Initialize a project on Hasura DDN"
+ddn project init
+```
+
+You can optionally also append a project name to this command.
+
+The CLI will respond with the project name, the subgraph(s) and env file which were created, and a hint to create a
+supergraph build.
+
+You now have a project on Hasura DDN with the same subgraphs as you have locally. Currently, the subgraphs are empty.
+
+:::info Create vs Initialize
+
+The `ddn project init` command is similar to `ddn project create` but it also creates the subgraphs and env file for
+you. `ddn project create` will only create an empty project and you will need to create the DDN project subgraphs and
+local `.env.cloud` file yourself.
+
+:::
+
+### Step 2: Create a supergraph build on Hasura DDN
+
+```bash
+ddn supergraph build create
+```
+
+This command will create builds for each connector, subgraph, and the supergraph. Each of these can be built
+independently but this command will create them all.
+
+The CLI will respond with the build version, the API URL, the Console URL, the PromptQL URL, the Project Name, and a
+hint to browse the build on the console.
+
+You can now use the console to explore the supergraph build by browsing to the console URL or by running
+`ddn console --build-version <build-version>` command.
+
+### Step 3: Apply the supergraph build to your project
+
+The build is not yet the "official" applied API for the project. A project can have any multiple of builds with their
+own API endpoints and only one applied at a time as the "official" API.
+
+```bash
+ddn supergraph build apply <build-version>
+```
+
+eg:
+
+```bash
+ddn supergraph build apply 85b0961544
+```
+
+This build is now the "official" applied API for the project and is accessible via the API URL in the output of the
+command, via the console, or any client accessing via the API URL.
+
+## Summary
+
+There are many more options and configurations available for deploying your project to Hasura DDN and we have detailed
+the simplest and most common flow here.
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/private/index.mdx ---
+
+---
+sidebar_position: 1
+sidebar_label: Overview
+description: ""
+keywords:
+  - hasura ddn
+  - private ddn
+  - dedicated vpc
+  - enterprise ddn
+seoFrontMatterUpdated: true
+sidebar_class_name: hidden-sidebar-item
+---
+
+# Private Deployment
+
+With Private deployment for Hasura DDN, you can run Hasura and your connectors either on dedicated infrastructure hosted
+by Hasura or on your own infrastructure.
+
+Private Hasura DDN offers enhanced security and isolation by enabling private connectivity for your databases, APIs, and
+other connectors. Hasura communicates with your sources over a dedicated private network, bypassing the public internet.
+
+- [Self-Hosted (BYOC)](/deployment/hasura-ddn/private/self-hosted) private deployments
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/private/self-hosted/index.mdx ---
+
+---
+sidebar_position: 1
+sidebar_label: Data Plane Installation
+description: "Learn how to install a Self-Hosted (Customer Managed) Data Plane."
+sidebar_class_name: hidden-sidebar-item
+keywords:
+  - hasura ddn
+  - enterprise ddn
+  - private ddn
+---
+
+import Thumbnail from "@site/src/components/Thumbnail";
+
+# Self-Hosted (Customer Managed) Data Plane Installation Guide
+
+:::info
+
+Documentation here targets customers who want to self host and self manage their clusters as well as their workloads.
+Here, you will find a full set of instructions, which takes you from local development all the way to having your
+workloads running under your Kubernetes hosted data plane.
+
+:::
+
+## Prerequisites {#prerequisites}
+
+Before continuing, ensure you go through the following checklist and confirm that you meet all the requirements
+
+- [DDN CLI](/quickstart.mdx) (Latest)
+- [Docker v2.27.1](/quickstart.mdx) (Or greater)
+  - You can also run `ddn doctor` to confirm that you meet the minimum requirements
+- [Helm3](https://helm.sh/docs/intro/install/) (Prefer latest)
+- [Hasura VS Code Extension](/quickstart.mdx) (Recommended, but not required)
+- Access to a Kubernetes cluster
+  - See Kubernetes version requirement [below](#kubernetes-version)
+- Ability to build and push images that can then be pulled down from the Kubernetes cluster
+- A user account on the Hasura DDN Control Plane
+- A Data Plane id, key & customer identifier created by the Hasura team. These will be referenced as `<data-plane-id>`,
+  `<data-plane-key>` & `<customer-identifier>`
+
+### Kubernetes version requirement {#kubernetes-version}
+
+These instructions were tested under the following:
+
+- Amazon Elastic Kubernetes Service (EKS)
+- Azure Kubernetes Service (AKS)
+- Google Kubernetes Engine (GKE)
+- Non-Cloud Kubernetes
+
+Version requirement: `1.28+`
+
+## Step 1. Local development {#local-development}
+
+:::note
+
+In this step, you will be setting up your local development. You will create a supergraph, add connector(s) to it and
+perform a local build.
+
+For more details regarding local development, you may reference our
+[Getting Started Guide](/how-to-build-with-ddn/overview/).
+
+:::
+
+```bash title="Login with the DDN CLI."
+ddn auth login
+```
+
+```bash title="Create a local directory where your supergraph will be created.  Afterwards, cd into it."
+mkdir hasura_project && cd hasura_project
+```
+
+```bash title="Initialize supergraph."
+ddn supergraph init .
+```
+
+```bash title="Add a connector.  Here, we are using the -i flag for interactive mode."
+ddn connector init -i
+```
+
+```bash title="Introspect the data source.  Substitute <connector-name> with name you chose for your connector above."
+ddn connector introspect <connector-name>
+```
+
+```bash title="Add models, commands and relationships based on the output from previous command.  Substitute <connector-name> with name you chose for your connector above."
+ddn model add <connector-name> "*"
+ddn command add <connector-name> "*"
+ddn relationship add <connector-name> "*"
+```
+
+```bash title="Build the supergraph locally."
+ddn supergraph build local
+```
+
+```bash title="Run docker.  Ensure all containers start up successfully."
+ddn run docker-start
+```
+
+```bash title="Verify via local console."
+ddn console --local
+```
+
+At this point, you have connected and introspected a data source and built your supergraph locally. Verify that
+everything is working as expected before moving on to the next section.
+
+## Step 2. Build connector(s) {#build-connectors}
+
+:::warning Building images with proper target platform
+
+Ensure that you are building the image with the proper target platform. If you need to build an image for a different
+target platform, specify it via `export DOCKER_DEFAULT_PLATFORM=<target_platform>` prior to running the commands below.
+A common `<target_platform>` to use is `linux/amd64`.
+
+:::
+
+:::note
+
+Repeat the steps below for each connector within your supergraph.
+
+:::
+
+```bash title="Build image via docker compose.  Find the <service-name> from app/connector/<connector>/compose.yaml"
+docker compose build <service-name>
+```
+
+```bash title="Re-tag the image."
+docker tag <root-folder-name>-app_<connector> <your_registry>/<connector>:<your_tag>
+```
+
+```bash title="Push the image to your registry."
+docker push <your_registry>/<connector>:<your_tag>
+```
+
+## Step 3. Deploy connector(s) {#deploy-connectors}
+
+:::info Hasura DDN Helm Repo
+
+Our DDN Helm Repo can be found [here](https://github.com/hasura/ddn-helm-charts/tree/main). Ensure that you run through
+the `Get Started` section there first before you attempt to install any Helm charts.
+
+Contact the Hasura team if you don't see a Helm chart available for your connector.
+
+:::
+
+Execute `helm search repo hasura-ddn` in order to find the appropriate Helm chart for your connector. The connector
+chart name will be referenced as `<connector-chart-name>` within this step.
+
+A typical connector Helm install command would look like this:
+
+:::info
+
+- `<connector-helm-release-name>`: Helm release name for your connector.
+
+- `<namespace>`: Namespace to deploy connector to.
+
+- `<container_repository_path>`: Container repository path (include the image name) which you chose in
+  [Step #2](#build-connectors).
+
+- `<your_tag>`: Image tag which you chose in [Step #2](#build-connectors).
+
+- `<connector-type>`: The connector type. Select the appropriate value from
+  [here](https://raw.githubusercontent.com/hasura/ddn-helm-charts/main/CONNECTORS).
+
+- `<data-plane-id>`: Data Plane id, provided by the Hasura team.
+
+- `<data-plane-key>`: Data Plane key, provided by the Hasura team.
+
+- `<connector_env_variable>`: Connector Env variable name and corresponding `<value>`. Run
+  `helm show readme <connector-chart-name>` in order to view the connector's README, which will list out the ENV
+  variables that you need to set in the `helm upgrade` command.
+
+  :::
+
+:::tip
+
+A common connector ENV variable that always needs to be passed through is
+`connectorEnvVars.HASURA_SERVICE_TOKEN_SECRET`. This value comes from the supergraph's `.env` file.
+
+:::
+
+```bash title="Connector Helm install."
+helm upgrade --install <connector-helm-release-name> \
+  --set namespace="<namespace>" \
+  --set image.repository="<container_repository_path>" \
+  --set image.tag="<your_tag>" \
+  --set dataPlane.id="<data-plane-id>" \
+  --set dataPlane.key="<data-plane-key>" \
+  --set connectorEnvVars.<connector_env_variable>="<value>" \
+  hasura-ddn/<connector-type>
+```
+
+## Step 4. Create a cloud project {#create-cloud-project}
+
+Ensure that you are running the commands here from the root of your supergraph.
+
+```bash title="Create cloud project."
+ddn project init --data-plane-id <data-plane-id>
+```
+
+This command will create a cloud project and will report back as to what the name of your cloud project is. We will
+reference this name going forward as `<ddn-project-name>`.
+
+## Step 5. Update .env.cloud with connector URLs {#update-env-cloud}
+
+Next, you will need to access the `.env.cloud` file which was generated at the root of your supergraph.
+
+For **each** READ_URL & WRITE_URL, you will need to make the necessary adjustments to ensure that your v3-engine (Which
+will be running in your Kubernetes cluster) is properly configured to reach each one of your connectors. The current
+values that these environment variables point to are for local connectivity.
+
+The URLs of these environment variables needs to be structured as shown below.
+
+:::info
+
+URL: **http://`<connector-helm-release-name>`-`<connector-type>`.`<namespace>`:8080**
+
+- `<connector-helm-release-name>`: Helm release name for your connector.
+
+- `<connector-type>`: The connector type. Select the appropriate value from
+  [here](https://raw.githubusercontent.com/hasura/ddn-helm-charts/main/CONNECTORS).
+
+- `<namespace>`: Namespace where your connector was deployed to.
+
+:::
+
+## Step 6. Create a cloud build {#create-cloud-build}
+
+After making the necessary changes to your `.env.cloud` file, run the below command. This will create a cloud build and
+will also generate the necessary artifacts which will later on be consumed by your v3-engine.
+
+```bash title="Create a build for your cloud project."
+ddn supergraph build create --self-hosted-data-plane --output-dir build-cloud --project <ddn-project-name> --out json
+```
+
+At this point, take note of the `<build_version>` and `<observability_hostname>` which will be outputted here. You will
+need these later.
+
+## Step 7. Build v3-engine {#build-engine}
+
+:::warning Building images with proper target platform
+
+Ensure that you are building the image with the proper target platform. If you need to build an image for a different
+target platform, specify it via `export DOCKER_DEFAULT_PLATFORM=<target_platform>` prior to running the commands below.
+A common `<target_platform>` to use is `linux/amd64`.
+
+:::
+
+Ensure that you are running the commands from the root of your supergraph.
+
+```bash title="Create a Dockerfile for v3-engine."
+cat <<EOF >> Dockerfile
+FROM ghcr.io/hasura/v3-engine
+COPY ./build-cloud /md/
+EOF
+```
+
+```bash title="Build the image via docker build.  Tag this image with your own registry and a custom tag of your choosing."
+docker build -t <your_registry>/v3-engine:<your_tag> .
+```
+
+```bash title="Push the image to your registry."
+docker push <your_registry>/v3-engine:<your_tag>
+```
+
+## Step 8. Deploy v3-engine {#deploy-engine}
+
+:::note
+
+Every time you create a new cloud build, execute the steps below.
+
+:::
+
+See the DDN Helm Repo [v3-engine](https://github.com/hasura/ddn-helm-charts/tree/main/charts/v3-engine) section for full
+documentation. A typical v3-engine Helm installation would look like this:
+
+:::info
+
+- `<v3-engine-helm-release-name>`: Helm release name for v3-engine. A suggested name is: `v3-engine-<build_version>`.
+
+- `<namespace>`: Namespace to deploy v3-engine to.
+
+- `<container_repository_path>`: Container repository path (includes the image name) which you chose in
+  [Step #7](#build-engine).
+
+- `<your_tag>`: Image tag which you chose in [Step #7](#build-engine).
+
+- `<observability_hostname>`: Observability hostname. This was returned in output when `ddn supergraph build create` was
+  executed.
+
+- `<data-plane-id>`: Data Plane id, provided by the Hasura team.
+
+- `<data-plane-key>`: Data Plane key, provided by the Hasura team.
+
+:::
+
+```bash title="v3-engine helm install."
+helm upgrade --install <v3-engine-helm-release-name> \
+  --set namespace="<namespace>" \
+  --set image.repository="<container_repository_path>" \
+  --set image.tag="<your_tag>" \
+  --set observability.hostName="<observability_hostname>" \
+  --set dataPlane.id="<data-plane-id>" \
+  --set dataPlane.key="<data-plane-key>" \
+  hasura-ddn/v3-engine
+```
+
+## Step 9. Create ingress {#create-build-ingress}
+
+:::note
+
+Every time you create a new cloud build, execute the steps below.
+
+:::
+
+If you're using <b>nginx-ingress</b> and <b>cert-manager</b>, you can deploy using the below manifest (ie. Save it to a
+file and run `kubectl apply -f <file_name>`). Ensure that you modify this accordingly
+
+:::info
+
+- `<build_version>`: This was part of the output when you ran `ddn supergraph build create` command.
+
+- `<domain>`: Domain which will be used for accessing this ingress. This could be constructed in the following format:
+  **`<build_version>`.`<your_fqdn>`**, where `<your_fqdn>` is a hostname of your own choosing which will host your build
+  specific APIs.
+
+- `<namespace>`: Namespace where your v3-engine was deployed to.
+
+- `<v3-engine-helm-release-name>`: Helm release name for your v3-engine.
+
+:::
+
+```bash
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+  labels:
+    app: v3-engine-<build_version>
+  name: v3-engine-<build_version>
+  namespace: <namespace>
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: <domain>
+    http:
+      paths:
+      - backend:
+          service:
+            name: <v3-engine-helm-release-name>-v3-engine
+            port:
+              number: 3000
+        path: /
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - <domain>
+    secretName: <domain>-tls-certs
+```
+
+Next, you will be running the command below in order to record the ingress URL within Hasura's Control Plane.
+
+:::info
+
+- `<ingress-url>`: Domain name, chosen above and prepended with protocol.
+
+:::
+
+```bash title="Record the ingress URL for your build version."
+ddn supergraph build set-self-hosted-engine-url <ingress-url> --build-version <build_version> --project <ddn-project-name>
+```
+
+## Step 10. Deploy v3-engine (Project API specific) {#deploy-engine-project-api}
+
+:::note Why am I deploying v3-engine again via Helm?
+
+In this step, you will be deploying v3-engine using a unique Helm release name. You will re-use this release name
+whenever you need to apply a specific build to the Project API. This is done in order to maintain the immutable build
+and Project API separation of DDN.
+
+:::
+
+See the DDN Helm Repo [v3-engine](https://github.com/hasura/ddn-helm-charts/tree/main/charts/v3-engine) section for full
+documentation.
+
+:::info
+
+- `<v3-engine-project-api-helm-release-name>`: Helm release name for v3-engine Project API. This should be a unique
+  release name which is specific to your Project API deployment. **You will use this same name everytime you need to
+  apply a build to the project API**.
+
+- `<namespace>`: Namespace to deploy v3-engine to.
+
+- `<container_repository_path>`: Container repository path which is tied to the specific build (includes the image
+  name).
+
+- `<your_tag>`: Image tag which is tied to the specific build.
+
+- `<project_api_observability_hostname>`: Observability hostname for Project API. This value is constructed as follows:
+  `<ddn-project-name>.<customer-identifier>.observability`
+
+- `<data-plane-id>`: Data Plane id, provided by the Hasura team.
+
+- `<data-plane-key>`: Data Plane key, provided by the Hasura team.
+
+:::
+
+```bash title="v3-engine helm install."
+helm upgrade --install <v3-engine-project-api-helm-release-name> \
+  --set namespace="<namespace>" \
+  --set image.repository="<container_repository_path>" \
+  --set image.tag="<your_tag>" \
+  --set observability.hostName="<project_api_observability_hostname>" \
+  --set dataPlane.id="<data-plane-id>" \
+  --set dataPlane.key="<data-plane-key>" \
+  hasura-ddn/v3-engine
+```
+
+## Step 11. Create ingress (Project API specific) {#create-project-ingress}
+
+:::tip _This step needs to be executed just one time_
+
+Below you will be creating an ingress for the Project API.
+
+:::
+
+**NOTE:** We are once again using an example of an ingress object which will work provided you have <b>nginx</b> and
+
+<b>cert-manager</b> installed on your cluster. Save the contents into a file and run `kubectl apply -f <file_name>`.
+
+:::info
+
+- `<namespace>`: Namespace where your v3-engine was deployed to.
+
+- `<domain>`: Domain which will be used for accessing this ingress. This could be constructed in the following format:
+  **`<prod-api>`.`<your_fqdn>`** or **`<ddn-project-name>`.`<your_fqdn>`** (If you want to name it after the project
+  name). Note that `<your_fqdn>` is a hostname of your own choosing which will host your Project API.
+
+- `<v3-engine-project-api-helm-release-name>`: Helm release name for your v3-engine. This matches the
+  `<v3-engine-project-api-helm-release-name>` that was specified in [Step 10](#deploy-engine-project-api).
+
+  :::
+
+```bash
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+  labels:
+    app: v3-engine
+  name: v3-engine
+  namespace: <namespace>
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: <domain>
+    http:
+      paths:
+      - backend:
+          service:
+            name: <v3-engine-project-api-helm-release-name>-v3-engine
+            port:
+              number: 3000
+        path: /
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - <domain>
+    secretName: <domain>-tls-certs
+```
+
+After you create the ingress above, you will be running the command below in order to record the project's API URL
+within Hasura's Control Plane.
+
+:::info
+
+- `<ingress-url>`: Domain name, chosen above and prepended with protocol.
+
+:::
+
+```bash title="Record the ingress URL for your project's API."
+ddn project set-self-hosted-engine-url <ingress-url>
+```
+
+## Step 12. Apply a build to Project API {#apply-build}
+
+:::tip
+
+Every time you need to apply a specific build to your Project API, execute this step.
+
+:::
+
+Repeat the `helm upgrade` instructions in [Step 10](#deploy-engine-project-api), using the unique Helm release name
+which you chose for your Project API. **Ensure that you are passing along the appropriate image tag for your v3-engine
+(ie. The image tag which is associated with the specific build that you want to apply).**
+
+After you go through the Helm installation, you need to go ahead and mark the build as applied. Proceed with the final
+step below.
+
+:::info
+
+- `<build_version>`: This is the build version which you just ran the `helm upgrade` for.
+
+:::
+
+```bash title="Mark build as applied."
+ddn supergraph build apply <build_version>
+```
+
+## Step 13. View Project API via console {#view-api}
+
+Access [Hasura console](https://console.hasura.io) and locate your cloud project. Access your project and verify your
+deployment.
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/private-ddn/data-plane-collaboration.mdx ---
+
+---
+sidebar_position: 3
+sidebar_label: Data Plane Collaboration
+description: "Learn how to use the Data Plane collaboration feature for Private DDN."
+keywords:
+  - hasura ddn
+  - private ddn
+  - dedicated vpc
+  - enterprise ddn
+seoFrontMatterUpdated: false
+---
+
+import Thumbnail from "@site/src/components/Thumbnail";
+
+# DDN Data Plane Collaboration
+
+## Introduction
+
+The Data Plane collaboration feature allows you to manage and facilitate collaboration on the
+[Data Plane](/architecture/overview.mdx#data-plane) for which you are an owner. The owner of the Data Plane can invite
+other users to collaborate/create projects on the Data Plane. The invited users can create and manage projects on the
+Data Plane. This feature enables users to invite, accept, reject, and remove collaborators for multi-team collaboration.
+
+### How to get started with Data Plane collaboration
+
+#### Inviting a collaborator
+
+To invite a user to your Data Plane, you need to open the
+[Data Plane Management Dashboard](https://console.hasura.io/data-plane/). The dashboard will show all available Data
+Planes. Select the Data Plane for which you have the `owner` role. Click `Invite Collaborator`. Enter the email address
+of the user you want to invite and click `Send Invites`. The invited user will receive an email with an invitation link.
+
+<Thumbnail src="/img/deployment/hasura-ddn/invite_data_plane_collaborator.png" alt="Invite Data Plane Collaborator" />
+
+#### Accepting or rejecting an invitation
+
+The invited user can accept or reject the invitation by clicking on the invitation link received in the email or going
+to the [Data Plane Management Dashboard](https://console.hasura.io/data-plane/). The dashboard will show all the invites
+received by the user. The user can accept or reject the invitation by clicking `Accept` or `Decline`.
+
+<Thumbnail
+  src="/img/deployment/hasura-ddn/accept_reject_data_plane_invitation.png"
+  alt="Accept or Reject Data Plane Invitation"
+/>
+
+#### Removing a collaborator
+
+You can remove any Data Plane collaborator by going to the
+[Data Plane Management Dashboard](https://console.hasura.io/data-plane/). Select the Data Plane for which you have the
+`owner` role, you'll be able to see all the collaborators of the Data Plane. Click `Remove` to remove the collaborator.
+
+<Thumbnail src="/img/deployment/hasura-ddn/remove_data_plane_collaborator.png" alt="Remove Data Plane Collaborator" />
+
+### Data Plane collaboration permissions
+
+Currently there are only two roles available for Data Plane collaboration:
+
+- `owner`: The owner of the Data Plane has full access to the Data Plane and can invite or remove collaborators.
+- `member`: The member of the Data Plane can create projects on the Data Plane and manage them.
+
+### What can a collaborator do?
+
+A collaborator can create projects on the Data Plane and manage them. To create the project in a Data Plane, the
+collaborator needs to select the Data Plane while creating the project using the
+[Hasura DDN CLI](/deployment/hasura-ddn/deploying-your-project/tutorial/create-a-project/).
+
+```
+ddn project create --data-plane-id <data-plane-id> --plan <plan>
+```
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/private-ddn/index.mdx ---
+
+---
+sidebar_position: 6
+sidebar_label: Hasura DDN
+description: "Learn how to get started with Hasura DDN and your GraphQL API."
+keywords:
+  - hasura ddn
+  - graphql api
+  - quickstart
+  - getting started
+  - guide
+---
+
+# Hasura Private DDN
+
+To deploy a supergraph to Hasura Private DDN, you first need to have a Data Plane created. When you onboard as a
+customer, a Data Plane would have been provisioned for you by the Hasura team and the details will be shared with you.
+
+You can find all the Data Planes you have access to on this page: https://console.hasura.io/data-plane
+
+To create a project, you need to be added as a collaborator to a data plane. Follow the steps at
+[Data Plane collaboration](/deployment/hasura-ddn/private-ddn/data-plane-collaboration.mdx) to add other users.
+
+Once collaborators are added, they can create projects using the following command:
+
+```
+ddn project create --data-plane-id <data-plane-id> --plan <plan>
+```
+
+After project creation, the steps are exactly the same as deploying to DDN. Follow the docs
+[to create subgraphs](/deployment/hasura-ddn/deploying-your-project/tutorial/02-create-a-subgraph.mdx) and continue to
+deploy.
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/ci-cd/index.mdx ---
+
+---
+sidebar_position: 5
+title: Setting Up CI/CD
+description: "Learn how to set up continuous integration and deployment for Hasura DDN projects"
+---
+
+# Setting Up CI/CD
+
+This guide covers different approaches to implementing continuous integration and deployment for your Hasura DDN
+projects.
+
+## Available Guides
+
+- [Generic CI/CD Setup](./generic.mdx)
+- [GitHub Actions Setup](./github-actions.mdx)
+
+## Key Concepts
+
+- Automated testing
+- Deployment pipelines
+- Environment management
+- Monitoring and alerts
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/ci-cd/github-actions.mdx ---
+
+---
+sidebar_position: 2
+title: GitHub Actions Setup
+description: "Set up CI/CD for Hasura DDN projects using GitHub Actions"
+---
+
+# GitHub Actions Setup
+
+Learn how to implement continuous integration and deployment for your Hasura DDN projects using GitHub Actions.
+
+## Setup Guide
+
+1. Workflow configuration
+2. Action setup
+3. Environment configuration
+4. Secrets management
+
+## Example Workflows
+
+- Basic deployment workflow
+- Multi-environment setup
+- Advanced deployment patterns
+
+## Best Practices
+
+- GitHub-specific optimizations
+- Action caching strategies
+- Security considerations
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/ci-cd/generic.mdx ---
+
+---
+sidebar_position: 1
+title: Generic CI/CD Setup
+description: "Set up CI/CD for Hasura DDN projects using any CI/CD platform"
+---
+
+# Generic CI/CD Setup
+
+Learn how to implement continuous integration and deployment for your Hasura DDN projects using any CI/CD platform.
+
+## Implementation Steps
+
+1. Setting up the build pipeline
+2. Configuring test environments
+3. Implementing deployment stages
+4. Setting up monitoring
+
+## Best Practices
+
+- Environment separation
+- Secret management
+- Rollback procedures
+- Performance monitoring
+
+
+
+--- File: ../ddn-docs/docs/deployment/hasura-ddn/multiple-regions.mdx ---
+
+---
+sidebar_position: 6
+title: Deploy to Multiple Regions
+description: "Learn how to deploy and manage Hasura DDN projects across multiple geographic regions"
+---
+
+# Deploy to Multiple Regions
+
+This guide explains how to deploy your Hasura DDN project across multiple geographic regions for improved performance
+and reliability.
+
+## Key Concepts
+
+- Multi-region architecture
+- Data synchronization
+- Load balancing
+- Failover strategies
+
+## Implementation Guide
+
+1. Planning your multi-region setup
+2. Region selection and configuration
+3. Data replication strategy
+4. Traffic routing and load balancing
+
+## Best Practices
+
+- Region-specific considerations
+- Performance optimization
+- Monitoring across regions
+- Disaster recovery planning
+
+## Common Challenges
+
+- Data consistency
+- Latency management
+- Cost optimization
+- Regulatory compliance
+
+
+
+--- File: ../ddn-docs/docs/deployment/self-hosted/index.mdx ---
+
+# Deploying to your own server
