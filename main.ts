@@ -58,6 +58,16 @@ interface FileEntry {
   parentDirs: string[];
 }
 
+function generateUrl(filePath: string): string {
+  // Remove the base docs directory prefix and .mdx extension
+  const relativePath = filePath
+    .replace(/^.*?\/docs\//, "")
+    .replace(/\.mdx$/, "");
+  // Convert the path to URL format
+  const urlPath = relativePath.split("/").join("/");
+  return `https://hasura.io/docs/3.0/${urlPath}/`;
+}
+
 async function combineMarkdownFiles(directory: string, outputFile: string) {
   const allContent: FileEntry[] = [];
   const categoryConfigs = new Map<string, CategoryConfig | null>();
@@ -160,7 +170,8 @@ async function combineMarkdownFiles(directory: string, outputFile: string) {
         entry.frontmatter.title ||
         entry.frontmatter.sidebar_label ||
         entry.path;
-      return `\n\n--- File: ${entry.path} ---\n# ${title}\n\n${entry.content}`;
+      const url = generateUrl(entry.path);
+      return `\n\n--- File: ${entry.path} ---\nURL: ${url}\n# ${title}\n\n${entry.content}`;
     })
     .join("\n");
 
